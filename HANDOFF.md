@@ -1,6 +1,6 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~13:00_
+_Last updated: 2026-10-17 ~13:20_
 
 ## Goal
 Hackathon (deadline 5pm, aim done 4pm). Prompt: multi-tenant campus marketplace, start with Alabama (UA), .edu verified, per-school customization, cross-campus browsing, innovation weighted most.
@@ -52,6 +52,8 @@ Team: 3 beginners using Codex + Claude.
 - `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
 - Luke's part (12:15): `/listings/new` (item/service/ride form; photo shrunk to 1280px, uploaded to storage, `/api/ai/listing` drafts title/desc/category/price/ticket_type via claude-opus-5-5, effort low, base64 image, ~5s, fallbacks "default"). `/listings/[id]` + `WantButton` (inserts `wants` with `listing_id` = matcher edge). `/[school]` feed grid links to listings.
 - `/chat` + `/api/ai/chat`: agent with tools search_listings, my_listings, create_listing, add_want (run as user, RLS). Client holds raw message history incl. thinking blocks and sends it back unchanged (Opus 5.5 rejects edited history). Tested 2 turns with fake tools.
+- Trades: Friend C's `loop_trade_action` RPC installed 13:20 as `supabase/migrations/0002_trade_action.sql` (service_role only; tested full 3-way flow on in-memory PG + live grants). Code on branch `trades`, not merged yet. Cash legs blocked at meetup until Stripe. Cancel blocked after any confirmed handoff (agreed).
+- Cross-campus: `/[school]?all=1` toggle, school tags, rivalry banner per other school. Auburn NOT in DB; add live in pitch with `supabase/demo_add_auburn.sql`.
 - Demo data: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (re-runnable, demo rows tagged `details.demo`/`[demo]` wants). Loop lrgann -> hlpenick -> egbarber -> lrgann.
 - Login works on live site (Gmail SMTP saved, Magic Link + Confirm signup templates send `{{ .Token }}`).
 - Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).
@@ -60,7 +62,7 @@ Team: 3 beginners using Codex + Claude.
 ## Next steps
 1. Test on live site with real accounts: photo listing, chat agent, want button.
 2. Swap feed markup for Friend B's `ListingCard` once merged; review Friend B/C PRs.
-3. Cross-campus browsing (All campuses toggle + Auburn banner) and wants-that-wait (link fuzzy wants to new listings).
+3. Wants-that-wait (link fuzzy wants to new listings). Merge `trades` PR when Friend C opens it.
 4. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas
