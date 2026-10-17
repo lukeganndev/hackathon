@@ -97,20 +97,9 @@ State machine (all-or-nothing loop): `proposed` -> `accepted` (every receiver ac
   - `done`: celebration state ("Loop closed! 3 people traded").
 - [ ] Live updates: in a client component, subscribe with `supabaseBrowser().channel(...).on("postgres_changes", { event: "*", schema: "public", table: "trade_legs", filter: \`trade_id=eq.${id}\` }, () => router.refresh())`, and the same for `trades` filtered by `id`. Unsubscribe on unmount.
 
-### 4. Stripe payment hold (about 45 min)
-Test mode only. Money is held, not charged, until the handoff code is confirmed.
-- [ ] `src/lib/stripe.ts`: `import Stripe from "stripe"; export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);`
-- [ ] On accept, when the trade becomes `accepted`: for each leg with `cash_cents > 0` create
-  ```ts
-  stripe.paymentIntents.create({
-    amount: leg.cash_cents, currency: "usd", capture_method: "manual",
-    payment_method: "pm_card_visa", confirm: true,
-    automatic_payment_methods: { enabled: true, allow_redirects: "never" },
-  })
-  ```
-  and save the id in `stripe_payment_intent_id`. (`pm_card_visa` is Stripe's test card so the demo needs no card form.)
-- [ ] On confirm: `stripe.paymentIntents.capture(id)`. On cancel: `stripe.paymentIntents.cancel(id)`.
-- [ ] Check it in the Stripe dashboard (test mode -> Payments): "Uncaptured" after accept, "Succeeded" after confirm.
+### 4. Stripe payment hold: SKIP, Luke is doing it
+- Luke owns `src/lib/stripeHolds.ts` (holdTrade / captureLeg / releaseTrade) and migration `0004_stripe_cash_legs.sql` (installed: cash legs need a hold before meetup instead of being blocked).
+- After your `trades` PR merges, Luke adds the 3 calls in `_lib/server.ts`. Don't add Stripe code yourself.
 
 ### 5. Demo data (already done by Luke)
 - `supabase/demo_seed.mjs` creates a guaranteed 3-way loop between the team's real accounts: lrgann gives the Norton Anthology to hlpenick, hlpenick gives the Nike shoes to egbarber, egbarber gives the Iron Bowl ticket to lrgann. Plus filler listings.
