@@ -56,11 +56,14 @@ export function TradeDashboard() {
 
   return (
     <main>
-      <section className={styles.hero} aria-labelledby="trades-heading">
-        <div><p className={styles.eyebrow}>MAKE WHAT YOU HAVE GO FURTHER</p><h1 id="trades-heading">Good things come<br />full circle<span className={styles.brandDot}>.</span></h1><p className={styles.heroText}>Your textbook could be someone’s next pair of shoes.<br className={styles.desktopBreak} /> Find the people who complete your loop.</p>
-          <button className={styles.primary} onClick={find} disabled={finding || proposing !== null || signedOut}>{finding ? "Finding your loops…" : "Find a loop"}<span aria-hidden="true">↗</span></button>
+      <section className={`band ${styles.hero}`} aria-labelledby="trades-heading">
+        <div className={styles.heroArt} aria-hidden="true"><svg viewBox="0 0 160 80"><path d="M80 40C60 8 14 8 14 40s46 32 66 0 66-32 66 0-46 32-66 0z" /></svg></div>
+        <div className={styles.heroText}>
+          <small>Your loops</small>
+          <h1 id="trades-heading">Good things come full circle.</h1>
+          <p>Your textbook could be someone’s next pair of shoes. Find the people who complete your loop.</p>
+          <button className={styles.heroButton} onClick={find} disabled={finding || proposing !== null || signedOut}>{finding ? "Finding your loops…" : "Find a loop"} <span aria-hidden="true">↻</span></button>
         </div>
-        <div className={styles.heroArt} aria-hidden="true"><div className={styles.orbit}><span>HAVE</span><strong>Something<br />for everyone.</strong><span>WANT</span></div><span className={styles.orbitTag}>A better kind of exchange</span></div>
       </section>
 
       {error && <div className={styles.error} role="alert">{error} {signedOut ? <Link href="/login">Sign in again</Link> : <button className={styles.textButton} onClick={load}>Refresh trades</button>}</div>}

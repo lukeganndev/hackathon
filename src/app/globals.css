@@ -13,7 +13,7 @@
 
 * { box-sizing: border-box; }
 body {
-  margin: 0; color: var(--ink);
+  margin: 0; color: var(--ink); overflow-x: clip;
   background: color-mix(in srgb, var(--accent) 5%, var(--bg));
   font: 15px/1.5 var(--font-sans), system-ui, sans-serif;
 }
