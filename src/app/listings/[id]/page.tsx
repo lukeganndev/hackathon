@@ -3,6 +3,7 @@ import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { WantButton } from "./WantButton";
 import { ReportButton } from "./ReportButton";
+import { BuyButton } from "./BuyButton";
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -43,7 +44,10 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
       {l.owner_id === user.id
         ? <p className="rounded bg-gray-100 dark:bg-gray-800 p-3">This is your listing.</p>
         : l.status === "active"
-          ? <WantButton listingId={l.id} title={l.title} wanted={!!myWant} />
+          ? <>
+              {l.price_cents != null && <BuyButton listingId={l.id} sellerId={l.owner_id} buyerId={user.id} priceCents={l.price_cents} />}
+              <WantButton listingId={l.id} title={l.title} wanted={!!myWant} />
+            </>
           : <p className="rounded bg-gray-100 dark:bg-gray-800 p-3">No longer available.</p>}
       {l.owner_id !== user.id && <ReportButton listingId={l.id} />}
     </main>
