@@ -102,7 +102,7 @@ State machine (all-or-nothing loop): `proposed` -> `accepted` (every receiver ac
 - After your `trades` PR merges, Luke adds the 3 calls in `_lib/server.ts`. Don't add Stripe code yourself.
 
 ### 5. Demo data (already done by Luke)
-- `supabase/demo_seed.mjs` creates a guaranteed 3-way loop between the team's real accounts: lrgann gives the Norton Anthology to hlpenick, hlpenick gives the Nike shoes to egbarber, egbarber gives the Iron Bowl ticket to lrgann. Plus filler listings.
+- `supabase/demo_seed.mjs` creates a guaranteed 3-way loop between the team's real accounts: lrgann gives the Norton Anthology to hlpenick, hlpenick gives the On Cloud shoes to egbarber, egbarber gives the Iron Bowl ticket to lrgann. Plus filler listings.
 - Run it any time to reset the demo: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber`. It deletes and recreates only demo rows.
 - Use it to test the matcher: `findLoops` for lrgann must return that 3-leg loop.
 

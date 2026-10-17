@@ -2,7 +2,7 @@
 // Re-runnable: deletes earlier demo rows (details.demo = true) first. Real listings are untouched.
 //   node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber
 // Args = display names (email before @) of 3 signed-up users: A, B, C.
-// Loop: A gives Norton -> B, B gives shoes -> C, C gives Iron Bowl ticket -> A.
+// Loop: A gives Norton -> B, B gives On Cloud shoes -> C, C gives Iron Bowl ticket -> A.
 import { createClient } from "@supabase/supabase-js";
 
 const [a, b, c] = process.argv.slice(2);
@@ -25,25 +25,33 @@ if (demoIds.length) {
 must(await db.from("listings").delete().eq("details->>demo", "true").not("status", "in", "(sold,traded)"));
 must(await db.from("wants").delete().like("text", "[demo]%"));
 
+// Freely licensed photos (Wikimedia Commons), copied into our bucket under demo/. Credit shown on the listing page.
+const photo = (name, credit) => ({ photo_url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-photos/demo/${name}.jpg`, credit });
+const PHOTOS = {
+  shoes: photo("shoes", "Goodreg3, CC BY-SA 4.0, via Wikimedia Commons"),
+  calc: photo("calc", "Hayden Schiff, CC BY 4.0, via Wikimedia Commons"),
+  lamp: photo("lamp", "Raimond Spekking, CC BY-SA 4.0, via Wikimedia Commons"),
+  ride: photo("ride", "Patrick Tomasso, CC0, via Wikimedia Commons"),
+};
 const listing = (who, row) => ({ owner_id: P[who].id, school_id: P[who].school_id, kind: "item", ...row, details: { ...row.details, demo: true } });
 const rows = must(await db.from("listings").insert([
   // The loop
   listing(a, { title: "Norton Anthology of English Literature, 10th ed, Vol. 1", description: "Some highlighting in the first 100 pages. EN 205.", category: "textbooks", price_cents: 4000 }),
-  listing(b, { title: "Nike Pegasus running shoes, men's size 10", description: "Worn about 10 times, too small for me.", category: "clothing", price_cents: 4500 }),
+  listing(b, { title: "On Cloud running shoes, men's size 10", description: "Worn about 10 times, too small for me.", category: "clothing", price_cents: 4500, photo_url: PHOTOS.shoes.photo_url, details: { photo_credit: PHOTOS.shoes.credit } }),
   listing(c, { title: "Iron Bowl ticket, upper deck", description: "Transfers through the official ticket account.", category: "tickets", ticket_type: "football_general", face_value_cents: 9000, price_cents: 9000 }),
   // Filler so the feed looks alive
   listing(a, { title: "Mini fridge, 3.1 cu ft", description: "Works great, moving out of the dorm.", category: "dorm", price_cents: 6000 }),
-  listing(b, { title: "TI-84 Plus graphing calculator", description: "Batteries included.", category: "electronics", price_cents: 5500 }),
-  listing(c, { title: "Desk lamp with USB port", description: "LED, three brightness levels.", category: "dorm", price_cents: null }),
+  listing(b, { title: "TI-84 Plus graphing calculator", description: "Batteries included.", category: "electronics", price_cents: 5500, photo_url: PHOTOS.calc.photo_url, details: { photo_credit: PHOTOS.calc.credit } }),
+  listing(c, { title: "Desk lamp with USB port", description: "LED, three brightness levels.", category: "dorm", price_cents: null, photo_url: PHOTOS.lamp.photo_url, details: { photo_credit: PHOTOS.lamp.credit } }),
   listing(b, { kind: "service", title: "CH 101 tutoring", description: "Got an A last spring. Library or Zoom.", category: "tutoring", price_cents: 2000, details: { unit: "hour", course: "CH 101" } }),
-  listing(c, { kind: "ride", title: "Ride Tuscaloosa → Birmingham, Sunday", description: "Leaving after lunch, room for bags.", category: "rides", price_cents: 1000, details: { from: "Tuscaloosa", to: "Birmingham", depart_at: "2026-10-18T13:00", seats: 2, pickup: "Ferguson Center lot" } }),
+  listing(c, { kind: "ride", title: "Ride Tuscaloosa → Birmingham, Sunday", description: "Leaving after lunch, room for bags.", category: "rides", price_cents: 1000, photo_url: PHOTOS.ride.photo_url, details: { from: "Tuscaloosa", to: "Birmingham", depart_at: "2026-10-18T13:00", seats: 2, pickup: "Ferguson Center lot", photo_credit: PHOTOS.ride.credit } }),
 ]).select("id, owner_id, title"));
 
 const id = (title) => rows.find((r) => r.title.startsWith(title)).id;
 const want = (who, listingTitle) => ({ user_id: P[who].id, school_id: P[who].school_id, text: `[demo] ${listingTitle}`, listing_id: id(listingTitle) });
 must(await db.from("wants").insert([
   want(b, "Norton Anthology"),
-  want(c, "Nike Pegasus"),
+  want(c, "On Cloud"),
   want(a, "Iron Bowl ticket"),
 ]));
 
