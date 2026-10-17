@@ -1,6 +1,6 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~11:00_
+_Last updated: 2026-10-17 ~11:15_
 
 ## Goal
 Hackathon (deadline 5pm, aim done 4pm). Prompt: multi-tenant campus marketplace, start with Alabama (UA), .edu verified, per-school customization, cross-campus browsing, innovation weighted most.
@@ -31,10 +31,14 @@ Team: 3 beginners using Codex + Claude.
 ## Timeline
 10:45 accounts + schema + scaffold | 11:15-1:30 core in parallel | 1:30-2:00 integrate + deploy | 2:00-3:15 tier 1 | 3:15-3:30 tier 2 if green | 3:30 FEATURE FREEZE | 3:30-4:00 seed demo data, record backup video | 4-5 review + pitch practice
 
-## Team split
-1. Auth, schools, listings pages
-2. AI: photo->listing, chat->haves/wants
-3. Matcher, trade state machine, Stripe
+## Team split (own your folders only, so merges never conflict)
+| Who | Owns | Builds |
+|---|---|---|
+| Luke (Claude) | `src/app/[school]/`, `src/app/listings/`, `src/app/api/ai/`, `src/app/chat/` | Feed, listing pages, create form + photo upload, photo->listing AI, chat agent -> `wants` |
+| Friend A (Codex) | `src/lib/matcher.ts`, `src/app/api/trades/`, `src/app/trades/` | Loop finder, trade steps + 4-digit codes, Stripe hold |
+| Friend B (Codex, design) | `src/app/page.tsx` (landing), `src/app/globals.css`, `src/app/layout.tsx`, `src/components/ui/`, `public/` | Landing page, look and feel, shared UI components, loop animation, pitch slides |
+- Branch per person, PR into `main`. Vercel gives each branch a preview URL.
+- Others use Friend B's components from `src/components/ui/`; ask before editing them.
 
 ## Built (11:00)
 - Next.js 15 + Tailwind at repo root; `npm run build` and lint pass. Setup steps in `README.md`.
@@ -46,12 +50,13 @@ Team: 3 beginners using Codex + Claude.
   - `listings.kind` = item | service | ride; `details` jsonb holds per-kind fields (ride: from/to/depart_at/seats; service: unit, course). Services (tutoring, haircut, nails, moving_help) and rides stay active after a deal, so the matcher must not mark them traded. Services/rides can be loop legs ("tutoring for a ride").
   - Storage bucket `listing-photos`, upload path `<uid>/file`.
 - `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
-- Not yet: Supabase project, `.env.local`, Vercel, git push to origin (github.com/lukeganndev/hackathon).
+- Supabase project `mfjizvmectbqgyfqqvoq` (ca-central-1): migration + seed applied 11:15, 7 tables + bucket verified. `.env.local` has URL prefilled (gitignored).
 
 ## Next steps
-1. Create Supabase project, run migration + seed, set email template `{{ .Token }}`, fill `.env.local`, share keys with team.
-2. Connect Vercel to the GitHub repo, add env vars.
-3. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
+1. Fill keys in `.env.local` (Supabase anon + service_role, Anthropic, Stripe test); share privately with team.
+2. Vercel: import page for lukeganndev/hackathon is open; add the 6 env vars, then Deploy.
+3. Custom SMTP (blocker for login): Supabase built-in email only reaches org members and templates are locked without it. Then set Magic Link + Confirm signup templates to `{{ .Token }}`.
+4. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas
 - On Windows, clone with `git -c core.longpaths=true clone ...` if the path is long.
