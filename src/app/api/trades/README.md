@@ -2,21 +2,18 @@
 
 API implementation is on `codex/trades`. Stripe is intentionally deferred to its checkpoint.
 
-## Required review by Luke
+## Database migration
 
-`AGENTS.md` reserves database changes for Luke. Nothing in the live Supabase schema
-has been changed by this branch.
-
-Review `_database/REVIEW_REQUIRED.sql` and move it into a new migration if approved.
+Luke reviewed and installed `supabase/migrations/0002_trade_action.sql`.
 It adds `loop_trade_action(uuid, text, jsonb)` and `loop_code_attempts`. Both are
 restricted to the service role. The function uses a single transaction and row
 locks so reserving listings, creating legs, and advancing state commit together.
 Original tables and `0001_init.sql` are unchanged.
 
-Without this installation, mutation routes return 503 with an explicit setup
-message. Loop search and trade reads use existing tables and do not need the RPC.
+The redundant SQL draft has been removed. New environments must apply both
+`0001_init.sql` and `0002_trade_action.sql` before using trade mutations.
 
-**Decision for review:** cancellation is allowed before any handoff is confirmed.
+**Agreed behavior:** cancellation is allowed before any handoff is confirmed.
 Once someone has handed over an item, cancellation returns 409 to avoid putting
 that item back on sale. This narrows the brief's "cancel any time before done" rule.
 Cash sales may be proposed, but cannot schedule/complete handoffs before Stripe
@@ -64,7 +61,7 @@ node --test src/app/api/trades/_tests/database.test.mjs
 npm.cmd run build
 ```
 
-The database test runs the actual initial migration and draft function against
+The database test runs both actual migrations against
 an in-memory PostgreSQL instance with minimal Supabase platform scaffolding.
 It uses the separately approved PGlite installation in
 `../.trade-db-tests/node_modules/@electric-sql/pglite/dist/index.js`, or an absolute
@@ -85,5 +82,7 @@ PGlite serializes queries; these tests do not simulate concurrent database sessi
 8. Verify simultaneous proposals for an overlapping item from separate sessions:
    one succeeds and the other conflicts, with no orphan rows.
 
-Trade screens and real student sessions are later checkpoints. No emails, user
-accounts, trades, or listings have been created in the shared project by these tests.
+The desktop trade screens are at `/trades` and `/trades/[id]`. They subscribe to
+trade and leg updates and reconcile every 15 seconds while visible. Shared
+`LoopRing` is not on main yet, so the detail screen uses an ordered handoff list.
+Cash handoffs remain disabled until the Stripe checkpoint.

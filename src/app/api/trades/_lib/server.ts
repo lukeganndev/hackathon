@@ -89,7 +89,7 @@ export function tradeRoute(action: Action, request: Request, params: { id?: stri
       // One database transaction locks rows, validates roles/state, and performs all writes.
       const { data, error } = await db().rpc("loop_trade_action", { p_actor: userId, p_action: action, p_payload: payload });
       if (error) {
-        if (error.code === "PGRST202") throw new TradeError(503, "Trade database setup is pending Luke's review");
+        if (error.code === "PGRST202") throw new TradeError(503, "Trade database migration is missing in this environment");
         const match = /^TRADE:(400|403|404|409|429):(.+)$/.exec(error.message);
         if (match) throw new TradeError(Number(match[1]), match[2]);
         if (["40001", "40P01", "55P03"].includes(error.code)) throw new TradeError(409, "Trade changed. Refresh and retry.");

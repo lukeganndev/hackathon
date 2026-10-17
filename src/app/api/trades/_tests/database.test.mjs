@@ -54,7 +54,7 @@ before(async () => {
     create publication supabase_realtime;
   `);
   await db.exec(await readFile(new URL("../../../../../supabase/migrations/0001_init.sql", import.meta.url), "utf8"));
-  await db.exec(await readFile(new URL("../_database/REVIEW_REQUIRED.sql", import.meta.url), "utf8"));
+  await db.exec(await readFile(new URL("../../../../../supabase/migrations/0002_trade_action.sql", import.meta.url), "utf8"));
   await db.exec("grant usage on schema public to anon, authenticated, service_role; grant all on all tables in schema public to service_role; grant select, insert, update, delete on schools, profiles, listings, wants, trades, trade_legs, trade_leg_codes to authenticated;");
 });
 
