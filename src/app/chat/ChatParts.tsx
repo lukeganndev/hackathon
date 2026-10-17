@@ -102,7 +102,11 @@ export function render(messages: Msg[]): Item[] {
       const r = JSON.parse(b.content);
       if (r.saved?.title) out.push({ kind: "chip", text: `📦 Listed: ${r.saved.title}`, href: `/listings/${r.saved.id}` });
       if (r.saved?.text) out.push({ kind: "chip", text: `🔍 Wants: ${r.saved.text}${r.saved.listing_id ? " (matched)" : ""}`, href: r.saved.listing_id ? `/listings/${r.saved.listing_id}` : undefined });
-      if (r.results?.length && r.results[0].school) out.push({ kind: "listings", listings: r.results });
+      if (r.results?.length && r.results[0].school && r.show !== false) out.push({ kind: "listings", listings: r.results });
+      if (r.updated?.id) {
+        out.push({ kind: "chip", text: r.updated.status === "removed" ? `🗑️ Taken down: ${r.updated.title}` : `✏️ Updated: ${r.updated.title}` });
+        if (r.updated.status !== "removed") out.push({ kind: "listings", listings: [r.updated] });
+      }
       if (r.loops?.length) { lastLoop = r.loops[0].legs; out.push({ kind: "loop", legs: lastLoop }); }
       if (r.proposed?.id) {
         // Swap the "found" card for a "started" card.

@@ -22,6 +22,7 @@ Rules:
 - Tickets must be posted with the photo form (ticket rules apply), not here. Say so.
 - Services (tutoring, haircut, nails, moving help) and rides are listings too (kind "service" or "ride").
 - Rides need from, to, and a departure date/time before you post. Ask for whichever is missing. Pickup spot is optional. Turn "Friday 3pm" into an exact date using today's date from the first message.
+- Your listings: you can edit a student's own listing (price, title, description, trade only) or take it down with update_listing; get the id from my_listings first. When they ask to see their listings, call my_listings with show true (the app shows cards); for behind-the-scenes checks use show false. After an update, confirm it in one line (the app shows the updated card).
 - Browsing: when the student asks to see or find listings ("show me mini fridges"), call search_listings. The app shows the results as listing cards under your message, so just say one short line like "Here are 3 mini fridges on campus." Never list them out in text.
 - Trades and loops: when the student wants to trade something for something ("a mini fridge for my Iron Bowl ticket") or asks for a loop, make sure their have (my_listings, or create_listing if it isn't posted) and want (search_listings, then add_want with the matching listing_id) are saved, then call find_loops. If it finds a loop, call propose_loop right away with the legs exactly as find_loops returned them (everyone still has to accept in the app, so this is safe), then say in one or two lines who gives what to whom and that you started the loop. The app shows a loop card. If there's no loop yet, say their want is saved and Loop will start a loop as soon as someone posts a match.
 - If a tool says something is not allowed, tell the student kindly why and don't try to post it another way.
@@ -46,7 +47,30 @@ const tools: Anthropic.Beta.BetaTool[] = [
     name: "my_listings",
     description: "List the student's own active listings.",
     strict: true,
-    input_schema: { type: "object", properties: {}, required: [], additionalProperties: false },
+    input_schema: {
+      type: "object",
+      properties: { show: { type: "boolean", description: "true if the student asked to see their listings (the app shows them as cards); false for a behind-the-scenes check" } },
+      required: ["show"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "update_listing",
+    description: "Edit or take down one of the student's own listings. Use null for fields that stay the same.",
+    strict: true,
+    input_schema: {
+      type: "object",
+      properties: {
+        listing_id: { type: "string", description: "id from my_listings" },
+        title: nullable("string"),
+        description: nullable("string"),
+        price_cents: { ...nullable("integer"), description: "New price in cents, or null to keep it" },
+        trade_only: { type: "boolean", description: "true to remove the price and make it trade only" },
+        remove: { type: "boolean", description: "true to take the listing down" },
+      },
+      required: ["listing_id", "title", "description", "price_cents", "trade_only", "remove"],
+      additionalProperties: false,
+    },
   },
   {
     name: "create_listing",
@@ -129,7 +153,8 @@ const tools: Anthropic.Beta.BetaTool[] = [
 
 const STATUS: Record<string, string> = {
   search_listings: "Searching listings on every campus…",
-  my_listings: "Checking what you've already posted…",
+  my_listings: "Checking your listings…",
+  update_listing: "Updating your listing…",
   create_listing: "Posting your listing and checking who wants it…",
   add_want: "Saving what you want…",
   find_loops: "Looking for a trade loop across campus…",
@@ -153,9 +178,28 @@ async function runTool(name: string, input: Record<string, unknown>, db: Supabas
       return error ? { error: error.message } : { results: data };
     }
     case "my_listings": {
-      const { data, error } = await db.from("listings").select("id, title, price_cents, kind")
-        .eq("owner_id", me.id).eq("status", "active");
-      return error ? { error: error.message } : { results: data };
+      const { data, error } = await db.from("listings").select("id, title, price_cents, kind, category, photo_url, status, school:schools(name, colors, email_domains)")
+        .eq("owner_id", me.id).eq("status", "active").order("created_at", { ascending: false });
+      return error ? { error: error.message } : { results: data, show: input.show === true };
+    }
+    case "update_listing": {
+      const patch: Record<string, unknown> = {};
+      if (typeof input.title === "string") patch.title = input.title.slice(0, 120);
+      if (typeof input.description === "string") patch.description = input.description.slice(0, 2000);
+      if (Number.isInteger(input.price_cents) && (input.price_cents as number) >= 0) patch.price_cents = input.price_cents;
+      if (input.trade_only === true) patch.price_cents = null;
+      if (input.remove === true) patch.status = "removed";
+      if (!Object.keys(patch).length) return { error: "Nothing to change." };
+      if (patch.title || patch.description) {
+        const v = await moderate({ title: patch.title as string | undefined, description: patch.description as string | undefined });
+        if (!v.allowed) return { error: `Not allowed on Loop: ${v.reason}` };
+      }
+      // RLS only lets students update their own listings; DB triggers still check content and ticket rules.
+      const { data, error } = await db.from("listings").update(patch).eq("id", String(input.listing_id)).eq("owner_id", me.id)
+        .select("id, title, price_cents, kind, category, photo_url, status, school:schools(name, colors, email_domains)").maybeSingle();
+      if (error) return { error: error.message };
+      if (!data) return { error: "That listing isn't yours or doesn't exist." };
+      return { updated: data };
     }
     case "create_listing": {
       const v = await moderate({ title: String(input.title), description: String(input.description ?? "") });
