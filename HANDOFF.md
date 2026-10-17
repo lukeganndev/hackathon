@@ -52,12 +52,12 @@ Team: 3 beginners using Codex + Claude.
 - `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
 - Luke's part: `/listings/new` (item/service/ride form; photo shrunk to 1280px, uploaded to storage, `/api/ai/listing` drafts title/desc/category/price/ticket_type via claude-opus-5-5, effort low, base64 image, ~5s, fallbacks "default"). `/listings/[id]` + `WantButton` (inserts `wants` with `listing_id` = matcher edge). `/[school]` feed grid links to listings.
 - `/chat` + `/api/ai/chat`: agent with tools search_listings, my_listings, create_listing, add_want (run as user, RLS). Client holds raw message history incl. thinking blocks and sends it back unchanged (Opus 5.5 rejects edited history). Tested 2 turns with fake tools.
-- Trades: Friend C's `loop_trade_action` RPC installed as `supabase/migrations/0002_trade_action.sql` (service_role only; tested full 3-way flow on in-memory PG + live grants). Code on branch `trades`, not merged yet. Cash legs blocked at meetup until Stripe. Cancel blocked after any confirmed handoff (agreed).
+- Trades: Friend C's `loop_trade_action` RPC installed as `supabase/migrations/0002_trade_action.sql` (service_role only; tested full 3-way flow on in-memory PG + live grants). Merged to main (screens at `/trades`, `/trades/[id]`). Cash legs blocked at meetup until Stripe. Cancel blocked after any confirmed handoff (agreed).
 - Cross-campus: `/[school]?all=1` toggle, school tags, rivalry banner per other school. Auburn NOT in DB; add live in pitch with `supabase/demo_add_auburn.sql`.
 - Wants that wait: `src/lib/matchWants.ts` links open fuzzy wants to a new listing (Claude, strict match). Runs after form post (`/api/ai/match`) and in chat `create_listing`. Listing page shows "N students want this".
 - Impact counter on `/[school]` (`ImpactCounter.tsx`, admin aggregate counts): students, live listings, items reused, $ kept on campus, loops closed.
 - `/listings/mine`: your listings + wants with Remove (soft delete). Report button on listings; `0003_reports.sql` installed (3 reports auto-hide).
-- Stripe (Luke): `src/lib/stripeHolds.ts` tested in test mode (hold/capture/release, idempotent). `0004_stripe_cash_legs.sql` installed. TODO after trades merge: in `_lib/server.ts` mutate(), call holdTrade when result status is accepted (create/accept), captureLeg after confirm, releaseTrade after cancel.
+- Stripe (Luke): `src/lib/stripeHolds.ts` tested in test mode (hold/capture/release, idempotent). `0004_stripe_cash_legs.sql` installed. Wired in `src/app/api/trades/_lib/server.ts` mutate(): hold on accepted, capture on confirm, release on cancel.
 - Demo data: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (re-runnable, demo rows tagged `details.demo`/`[demo]` wants). Loop lrgann -> hlpenick -> egbarber -> lrgann.
 - Login works on live site (Gmail SMTP saved, Magic Link + Confirm signup templates send `{{ .Token }}`).
 - Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).
@@ -66,7 +66,7 @@ Team: 3 beginners using Codex + Claude.
 ## Next steps
 1. Test on live site with real accounts: photo listing, chat agent, want button.
 2. Swap feed markup for Friend B's `ListingCard` once merged; review Friend B/C PRs.
-3. Merge `trades` PR when Friend C opens it.
+3. Live dry run of the 3-way demo loop with all 3 laptops; then a cash sale to check Stripe.
 4. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas

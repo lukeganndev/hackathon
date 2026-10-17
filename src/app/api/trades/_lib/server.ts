@@ -1,5 +1,6 @@
 import { supabaseAdmin, supabaseServer } from "@/lib/supabase/server";
 import { findLoops } from "@/lib/matcher";
+import { captureLeg, holdTrade, releaseTrade } from "@/lib/stripeHolds";
 import { handleTradeRequest, TradeError, type Action, type TradeDependencies } from "./http";
 
 type Database = ReturnType<typeof supabaseAdmin>;
@@ -99,6 +100,17 @@ export function tradeRoute(action: Action, request: Request, params: { id?: stri
       if (data && typeof data === "object" && "httpStatus" in data && "error" in data) {
         const failure = data as { httpStatus: number; error: string };
         throw new TradeError(failure.httpStatus, failure.error);
+      }
+      // Stripe (test mode): hold cash when everyone has accepted, charge on each confirmed
+      // handoff, release on cancel. All idempotent; a retried accept re-attempts a failed hold.
+      const trade = (data as { trade?: { id: string; status: string } }).trade;
+      try {
+        if (trade && (action === "create" || action === "accept") && trade.status === "accepted") await holdTrade(trade.id);
+        if (action === "confirm") await captureLeg(String(payload.legId));
+        if (trade && action === "cancel") await releaseTrade(trade.id);
+      } catch (e) {
+        console.error("stripe", e);
+        throw new TradeError(503, "Payment step failed. Please retry.");
       }
       return data;
     },
