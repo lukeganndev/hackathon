@@ -6,6 +6,7 @@ import { Crest } from "../Crest";
 import { ListingCard } from "../ListingCard";
 import { ImpactCounter } from "./ImpactCounter";
 import { LoopBanner } from "./LoopBanner";
+import { AskLoop } from "./AskLoop";
 
 type Row = { id: string; title: string; price_cents: number | null; photo_url: string | null; kind: string; category: string | null; school_id: string; owner: { display_name: string } | null };
 const CATS = ["textbooks", "clothing", "tickets", "furniture", "electronics", "dorm", "lab", "tutoring", "rides", "other"];
@@ -63,6 +64,7 @@ export default async function SchoolPage({ params, searchParams }: {
         </div>
       </section>
 
+      {user && <AskLoop shortName={short} />}
       {user && <LoopBanner userId={user.id} />}
       <ImpactCounter schoolId={school.id} campuses={campuses ?? 1} />
 

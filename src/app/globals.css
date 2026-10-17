@@ -113,3 +113,31 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 .gate .crest { width: 56px; height: 66px; }
 .gate .crest.logo, .panel .crest.logo { width: 96px; height: 66px; padding: 8px; border: 1px solid var(--line); box-shadow: none; }
 .wel .crest.logo { width: 220px; height: 164px; padding: 18px; }
+
+/* Ask Loop AI box: soft gradient glow in school colors, orb, chips, bubbles, thinking pill. */
+@keyframes glow { 0%, 100% { background-position: 0% 50% } 50% { background-position: 100% 50% } }
+@keyframes orb { 50% { transform: scale(1.12); filter: hue-rotate(25deg) } }
+@keyframes shimmer { to { background-position: -200% 0 } }
+@keyframes rays { to { transform: rotate(360deg) } }
+.ask { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 20px; background: var(--card); isolation: isolate; }
+.ask::before { content: ""; position: absolute; inset: -2px; border-radius: 22px; z-index: -1;
+  background: linear-gradient(120deg, var(--accent), var(--c2), color-mix(in srgb, var(--accent) 40%, #7c5cff), var(--accent));
+  background-size: 300% 300%; animation: glow 8s ease infinite; filter: blur(10px); opacity: .45; }
+.ask::after { content: ""; position: absolute; inset: 0; border-radius: 20px; z-index: -1; background: var(--card); border: 1px solid var(--line); }
+.ask-head { display: flex; gap: 12px; align-items: center; }
+.ask-orb { width: 38px; height: 38px; flex: none; border-radius: 50%; animation: orb 4s ease-in-out infinite;
+  background: radial-gradient(circle at 30% 30%, #fff, var(--c2) 35%, var(--accent) 75%); box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 60%, transparent); }
+.ask-input { display: flex; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 6px; }
+.ask-input:focus-within { border-color: var(--accent); }
+.ask-input input { flex: 1; border: 0; background: none; }
+.ask-input .btn { padding: 8px 14px; border-radius: 10px; font-size: 18px; line-height: 1; }
+.ask-thread { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow: auto; }
+.ai-chip { display: inline-block; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 99px; padding: 6px 12px; font-size: 13px; text-decoration: none; align-self: flex-start; }
+button.ai-chip:hover, a.ai-chip:hover { border-color: var(--accent); }
+.bubble { max-width: 85%; margin: 0; border-radius: 16px; padding: 8px 14px; white-space: pre-wrap; }
+.bubble.me { align-self: flex-end; background: var(--accent); color: var(--on); }
+.bubble.ai { align-self: flex-start; background: var(--bg); border: 1px solid var(--line); }
+.think { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; border: 1px solid var(--line); background: var(--bg); border-radius: 99px; padding: 6px 12px 6px 8px; font-size: 13px; }
+.think svg { width: 16px; height: 16px; animation: rays 1s steps(8) infinite; } .think line { stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; }
+.shimmer { background: linear-gradient(90deg, var(--mute) 0%, var(--ink) 50%, var(--mute) 100%); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 1.6s linear infinite; }
