@@ -1,6 +1,6 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~11:15_
+_Last updated: 2026-10-17 ~12:15_
 
 ## Goal
 Hackathon (deadline 5pm, aim done 4pm). Prompt: multi-tenant campus marketplace, start with Alabama (UA), .edu verified, per-school customization, cross-campus browsing, innovation weighted most.
@@ -50,13 +50,16 @@ Team: 3 beginners using Codex + Claude.
   - `listings.kind` = item | service | ride; `details` jsonb holds per-kind fields (ride: from/to/depart_at/seats; service: unit, course). Services (tutoring, haircut, nails, moving_help) and rides stay active after a deal, so the matcher must not mark them traded. Services/rides can be loop legs ("tutoring for a ride").
   - Storage bucket `listing-photos`, upload path `<uid>/file`.
 - `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
+- Luke's part (12:15): `/listings/new` (item/service/ride form; photo shrunk to 1280px, uploaded to storage, `/api/ai/listing` drafts title/desc/category/price/ticket_type via claude-opus-5-5, effort low, base64 image, ~5s, fallbacks "default"). `/listings/[id]` + `WantButton` (inserts `wants` with `listing_id` = matcher edge). `/[school]` feed grid links to listings.
+- Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).
 - Supabase project `mfjizvmectbqgyfqqvoq` (ca-central-1): migration + seed applied 11:15, 7 tables + bucket verified. `.env.local` has URL prefilled (gitignored).
 
 ## Next steps
-1. Fill keys in `.env.local` (Supabase anon + service_role, Anthropic, Stripe test); share privately with team.
-2. Vercel: import page for lukeganndev/hackathon is open; add the 6 env vars, then Deploy.
-3. Custom SMTP (blocker for login): Supabase built-in email only reaches org members and templates are locked without it. Then set Magic Link + Confirm signup templates to `{{ .Token }}`.
-4. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
+1. Gmail SMTP (blocker for login): Luke turns on Google 2-Step Verification, creates an app password, fills Supabase SMTP sender/username/password (host smtp.gmail.com:465 prefilled, unsaved). Then set Magic Link + Confirm signup templates to `{{ .Token }}`.
+2. Then test real login + photo listing on the deployed site.
+3. Luke's next: chat agent (`src/app/chat/`, `/api/ai/chat`) -> writes `wants`, resolves fuzzy wants to `listing_id`.
+4. Swap feed markup for Friend B's `ListingCard` once merged.
+5. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas
 - On Windows, clone with `git -c core.longpaths=true clone ...` if the path is long.
