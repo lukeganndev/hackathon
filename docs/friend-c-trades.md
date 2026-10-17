@@ -8,7 +8,7 @@ Paste this whole file into Codex and say: "I'm Friend C. Work through this file 
 **Loop** is a campus marketplace for University of Alabama students (more schools later). People post what they have and say what they want. The app finds **trade loops**: Alex gives Bri a textbook, Bri gives Cam shoes, Cam gives Alex a ticket. Everyone gets what they want even though no two people want each other's stuff (like kidney-exchange matching). Plain buy/sell works too.
 
 **Your part is the core innovation the judges score most:** finding loops and walking everyone through a safe handoff.
-- Phone-first web app: Next.js 15 (App Router) + Supabase (Postgres) + Stripe in **test mode**.
+- Desktop-first website (still usable on phones): Next.js 15 (App Router) + Supabase (Postgres) + Stripe in **test mode**.
 - Hackathon: core working by 1:30pm, feature freeze 3:30pm, demo at 5pm.
 
 ## Your files (only edit these)

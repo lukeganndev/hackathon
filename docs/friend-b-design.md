@@ -6,7 +6,7 @@ Paste this whole file into Codex and say: "I'm Friend B. Work through this file 
 
 ## What we're building
 **Loop** is a campus marketplace for University of Alabama students (more schools later). You post stuff you have, say what you want, and the app finds **trade loops**: Alex gives Bri a textbook, Bri gives Cam shoes, Cam gives Alex a ticket. Everyone gets what they want, even though no two people want each other's stuff. You can also just buy and sell.
-- Phone-first web app. Judges will see it on a phone-sized screen.
+- Desktop-first website. Judges will see it on a laptop screen (~1280px wide). It must still work on a phone.
 - Pitch line: **"Trade in loops, not pairs."**
 - Hackathon: feature freeze 3:30pm, demo at 5pm.
 
@@ -28,7 +28,7 @@ You own **how the app looks**. No database or API work. Others build the feature
 3. `npm install`
 4. Put the `.env.local` file Luke DMs you into the `hackathon` folder. **Never commit it or post it anywhere.**
 5. `git checkout -b design`
-6. `npm run dev`, then open http://localhost:3000. In the browser, press F12, then Ctrl+Shift+M (phone view), then pick iPhone 12 or set 390px wide.
+6. `npm run dev`, then open http://localhost:3000 in a normal browser window. To check phones too: F12, then Ctrl+Shift+M, pick iPhone 12.
 
 ## Saving your work (do this every 20-30 min)
 ```
@@ -36,13 +36,13 @@ git add -A
 git commit -m "what you did"
 git push -u origin design
 ```
-On GitHub, open a Pull Request from `design` into `main` and tell Luke. Vercel posts a preview link on the PR so you can see it live on your phone. Before pushing, `npm run build` must pass.
+On GitHub, open a Pull Request from `design` into `main` and tell Luke. Vercel posts a preview link on the PR so you can see it live. Before pushing, `npm run build` must pass.
 
 ## Rules
 - Tailwind CSS classes only (it's already installed). **No new npm packages.**
 - No school logos or trademarked art. School colors only. Alabama: crimson `#9E1B32` and white.
 - Each school page sets a CSS variable `--school` to that school's color. Use `var(--school)` for accent colors so Auburn's pages turn orange/navy automatically.
-- Must look right at 390px wide. Big tap targets (at least 44px tall).
+- Design for desktop first (1280px wide): a top nav bar, wide layouts, multi-column grids. Then make sure it doesn't break on a phone (390px): columns stack, nothing scrolls sideways. Use Tailwind breakpoints (`md:`, `lg:`).
 - Readable contrast. Every image needs `alt` text. Buttons are real `<button>` elements.
 
 ---
@@ -51,7 +51,7 @@ On GitHub, open a Pull Request from `design` into `main` and tell Luke. Vercel p
 
 ### 1. Theme (about 20 min)
 - [ ] In `globals.css`: pick one font (Google Font via `next/font` in `layout.tsx`, e.g. Inter or Plus Jakarta Sans), a clean background, text colors, and rounded corners. Keep dark mode working or remove it; don't leave it half done.
-- [ ] In `layout.tsx`: page frame with max width ~448px, centered, padding. Keep `<html lang="en">` and the viewport export.
+- [ ] In `layout.tsx`: a top nav bar (Loop wordmark left; links right: Browse, Sell, Trades, Sign in) and a page container (`max-w-6xl mx-auto px-6`). Keep `<html lang="en">` and the viewport export.
 
 ### 2. Shared components in `src/components/ui/` (about 45 min)
 Others will import these, so **keep these exact names and props**:
@@ -87,9 +87,9 @@ Ask Luke first, since these files belong to others:
 
 ### 6. Pitch support (3:30-4:00pm)
 - [ ] 4-5 pitch slides in Google Slides with the same colors and font: problem, the loop idea, live demo, why it scales to every campus, roadmap.
-- [ ] Help record the backup demo video (screen recording of the phone view).
+- [ ] Help record the backup demo video (screen recording of the site in a browser).
 
 ## Done means
 - `npm run build` passes, PR merged into `main`.
-- The landing page looks good at 390px wide and on a real phone through the Vercel link.
+- The landing page looks good on a laptop screen and doesn't break on a phone.
 - `Button`, `Card`, `Badge`, `ListingCard`, `LoopRing` exist with the exact props above.

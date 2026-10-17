@@ -22,7 +22,7 @@ Team: 3 beginners using Codex + Claude.
 - Tickets: transfer via official account only; payment held until buyer confirms or event start (auto-refund). Ticket policy per ticket type: transfer_only | face_value_cap | open. UA general tickets allow resale but ban brokers -> face_value_cap + broker-flag (many ticket listings). Student ticket rules: still unchecked.
 - Trust: .edu identity, ratings only after code-confirmed deal, AI moderation of listings, safe meetup spots per school, report/block.
 
-## Scope (app name: Loop, phone-first web, live demo + backup video, 3-5 min pitch)
+## Scope (app name: Loop, desktop-first website (still usable on phones), live demo + backup video, 3-5 min pitch)
 - Core (must): auth/schools, photo->listing, chat agent, loop matcher, trade steps w/ codes, Stripe hold, ticket policy check.
 - Tier 1 (2:00pm): loop animation, cash top-ups, impact counter, rivalry mode (Auburn row + cross-campus banner).
 - Tier 2 (only if core green at 2pm): wants that wait (in-app only), move-out bulk photos, course-aware textbooks. Cut in reverse order.

@@ -7,7 +7,7 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="antialiased font-sans max-w-md mx-auto min-h-screen p-4">{children}</body>
+      <body className="antialiased font-sans max-w-6xl mx-auto min-h-screen px-6 py-8">{children}</body>
     </html>
   );
 }

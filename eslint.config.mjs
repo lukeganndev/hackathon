@@ -11,6 +11,8 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Listing photos are user uploads from Supabase storage; plain <img> is fine.
+  { rules: { "@next/next/no-img-element": "off" } },
   {
     ignores: [
       "node_modules/**",

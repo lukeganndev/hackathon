@@ -29,7 +29,7 @@ export default function Login() {
   }
 
   return (
-    <main className="flex flex-col gap-3">
+    <main className="flex flex-col gap-3 max-w-sm mx-auto">
       <h1 className="text-2xl font-bold">Sign in</h1>
       {!sent ? (
         <form onSubmit={send} className="flex flex-col gap-2">
