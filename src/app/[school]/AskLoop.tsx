@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Thread, ThinkingPill, useLoopChat } from "../chat/ChatParts";
 
-const SUGGESTIONS = ["Trade my calc textbook for a mini fridge", "Find me a CH 101 tutor", "Anyone driving to Atlanta this weekend?"];
+const SUGGESTIONS = ["Find me a trade loop", "Trade my calc textbook for a mini fridge", "Find me a CH 101 tutor"];
 
 // Inline AI box under the campus banner: say what you have or want, Loop lists and matches it.
 export function AskLoop({ shortName }: { shortName: string }) {
-  const { messages, busy, status, error, send } = useLoopChat();
+  const { messages, busy, status, error, send, reset } = useLoopChat();
   const [draft, setDraft] = useState("");
   const router = useRouter();
   const go = async (text: string) => {
@@ -25,7 +25,10 @@ export function AskLoop({ shortName }: { shortName: string }) {
           <b className="serif" style={{ fontSize: 20 }}>Ask Loop</b>
           <p className="mute" style={{ margin: 0, fontSize: 13 }}>Say what you have or want. Loop posts it, searches {shortName} and every campus, and finds your loop.</p>
         </div>
-        {!!messages.length && <Link href="/chat" className="mute" style={{ marginLeft: "auto", fontSize: 13 }}>Open full chat →</Link>}
+        {!!messages.length && <span style={{ marginLeft: "auto", fontSize: 13, display: "flex", gap: 12 }}>
+          <button type="button" onClick={reset} className="mute" style={{ background: "none", border: 0, padding: 0 }}>New chat</button>
+          <Link href="/chat" className="mute">Open full chat →</Link>
+        </span>}
       </div>
 
       {!!messages.length && (

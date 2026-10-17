@@ -4,7 +4,7 @@ import { Fraunces, Inter_Tight } from "next/font/google";
 import { supabaseServer } from "@/lib/supabase/server";
 import { themeVars, type School } from "@/lib/schoolTheme";
 import { LoopMark } from "./Crest";
-import { Nav, SignOut, Intro } from "./HeaderClient";
+import { Nav, MobileNav, SignOut, Intro } from "./HeaderClient";
 import "./globals.css";
 
 const serif = Fraunces({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-serif" });
@@ -35,10 +35,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           {user && school && <Nav slug={school.slug} />}
           <div style={{ flex: 1 }} />
           {user && school
-            ? <span className="chip"><i className="dot" />{school.name} · {name}<SignOut /></span>
+            ? <span className="chip who"><i className="dot" />{school.name} · {name}<SignOut /></span>
             : <Link href="/login" className="btn" style={{ padding: "8px 16px" }}>Sign in</Link>}
         </header>
         <main className="page">{children}</main>
+        {user && school && <MobileNav slug={school.slug} />}
       </body>
     </html>
   );

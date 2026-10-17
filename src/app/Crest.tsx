@@ -1,12 +1,10 @@
 import { ink, initials, type School } from "@/lib/schoolTheme";
 
-// School crest: the official logo if the school row has one (transparent PNG from Wikimedia
-// Commons via Wikidata), otherwise a shield with initials in school colors (from the design).
+// School crest: the official logo icon if the school row has one (logo.dev), otherwise a shield with initials in school colors (from the design).
 export function Crest({ school, className = "crest" }: { school: Pick<School, "name" | "slug" | "colors" | "logo_url">; className?: string }) {
   if (school.logo_url) {
-    // Transparent official logo. CSS shows it in white on school-color bands and in dark mode;
-    // "block" logos (a colored box, like BU's) always keep their own colors.
-    return <img className={`${className} logo${school.colors.logo_block ? " block" : ""}`} src={school.logo_url} alt={`${school.name} logo`} />;
+    // Official logo as a rounded app icon (logo.dev).
+    return <img className={`${className} logo`} src={school.logo_url} alt={`${school.name} logo`} />;
   }
   const a = initials(school), c = school.colors.primary, c2 = school.colors.secondary ?? "#828A8F", k = ink(c);
   return (

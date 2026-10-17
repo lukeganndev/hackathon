@@ -58,12 +58,21 @@ export default function NewListing() {
     if (!res.ok) return setError(draft.error);
     // Disallowed photo: drop it so it can't be posted anyway.
     if (!draft.allowed) { setPhotoUrl(null); return setError("That item isn't allowed on Loop. Try a different photo."); }
-    setF((old) => ({
-      ...old,
-      title: draft.title, description: draft.description, category: draft.category,
-      price: (draft.price_cents / 100).toFixed(2),
-      ticket_type: draft.ticket_type ?? "",
-    }));
+    // Type the AI's draft into the form so students see it being written.
+    setF((old) => ({ ...old, title: "", description: "", category: draft.category, ticket_type: draft.ticket_type ?? "" }));
+    setStatus("AI is writing your listing…");
+    const type = (key: "title" | "description" | "price", text: string) => new Promise<void>((done) => {
+      let i = 0;
+      const t = setInterval(() => {
+        i = Math.min(text.length, i + 2);
+        setF((old) => ({ ...old, [key]: text.slice(0, i) }));
+        if (i >= text.length) { clearInterval(t); done(); }
+      }, 18);
+    });
+    await type("title", draft.title);
+    await type("price", (draft.price_cents / 100).toFixed(2));
+    await type("description", draft.description);
+    setStatus("");
   }
 
   async function submit(e: React.FormEvent) {

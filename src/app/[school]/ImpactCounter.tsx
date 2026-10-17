@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase/server";
+import { CountUp } from "../Motion";
 
 // Live campus stats for the pitch. Aggregate counts only, so reading with the
 // admin client exposes nothing private (trades are otherwise participant-only).
@@ -18,7 +19,7 @@ export async function ImpactCounter({ schoolId, campuses }: { schoolId: string; 
   ];
   return (
     <section className="stats" aria-label="Impact">
-      {stats.map(([n, label]) => <div key={label}><b>{n}</b>{label}</div>)}
+      {stats.map(([n, label]) => <div key={label}><b><CountUp value={n} /></b>{label}</div>)}
     </section>
   );
 }

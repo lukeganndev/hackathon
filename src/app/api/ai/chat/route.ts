@@ -1,7 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseAdmin, supabaseServer } from "@/lib/supabase/server";
 import { matchWaitingWants } from "@/lib/matchWants";
 import { moderate } from "@/lib/moderate";
+import { findLoops } from "@/lib/matcher";
 
 // Chat agent: turns "trade my shoes for a Norton Anthology or sell for $25" into
 // listings (haves) and wants. Tools run as the signed-in user, so RLS applies.
@@ -21,6 +22,7 @@ Rules:
 - Tickets must be posted with the photo form (ticket rules apply), not here. Say so.
 - Services (tutoring, haircut, nails, moving help) and rides are listings too (kind "service" or "ride").
 - Rides need from, to, and a departure date/time before you post. Ask for whichever is missing. Pickup spot is optional. Turn "Friday 3pm" into an exact date using today's date from the first message.
+- Trades and loops: when the student wants to trade something or asks for a loop, make sure their have (create_listing or my_listings) and want (add_want with a listing_id) are saved, then call find_loops. If it finds a loop, describe it in one short line per person (who gives what to whom) and ask if they want you to propose it. Only call propose_loop after they say yes, passing the legs exactly as find_loops returned them. If there's no loop yet, say their want is saved and Loop will find a loop when someone posts a match.
 - If a tool says something is not allowed, tell the student kindly why and don't try to post it another way.
 - Only describe what you actually saved. Never promise features Loop doesn't have (notifications, messaging, payments for rides).
 - After saving, confirm in one or two plain sentences what you saved. No markdown headers.`;
@@ -95,6 +97,33 @@ const tools: Anthropic.Beta.BetaTool[] = [
       additionalProperties: false,
     },
   },
+  {
+    name: "find_loops",
+    description: "Find trade loops (2-4 students each giving one item) that include this student, using everyone's saved wants.",
+    strict: true,
+    input_schema: { type: "object", properties: {}, required: [], additionalProperties: false },
+  },
+  {
+    name: "propose_loop",
+    description: "Propose a loop from find_loops as a trade. Only after the student says yes.",
+    strict: true,
+    input_schema: {
+      type: "object",
+      properties: {
+        legs: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: { from: { type: "string" }, to: { type: "string" }, listingId: { type: "string" } },
+            required: ["from", "to", "listingId"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["legs"],
+      additionalProperties: false,
+    },
+  },
 ];
 
 const STATUS: Record<string, string> = {
@@ -102,6 +131,8 @@ const STATUS: Record<string, string> = {
   my_listings: "Checking what you've already posted…",
   create_listing: "Posting your listing and checking who wants it…",
   add_want: "Saving what you want…",
+  find_loops: "Looking for a trade loop across campus…",
+  propose_loop: "Proposing the loop to everyone…",
 };
 
 export const maxDuration = 60;
@@ -141,6 +172,32 @@ async function runTool(name: string, input: Record<string, unknown>, db: Supabas
       const { data, error } = await db.from("wants").insert({ ...input, user_id: me.id, school_id: me.school_id })
         .select("id, text, listing_id").single();
       return error ? { error: error.message } : { saved: data };
+    }
+    case "find_loops": {
+      // Same edges as the trades API: active concrete wants on active listings.
+      const admin = supabaseAdmin();
+      const { data: wants } = await admin.from("wants")
+        .select("user_id, listing_id, listing:listings!inner(owner_id, title, status)")
+        .eq("active", true).not("listing_id", "is", null).eq("listing.status", "active").limit(1000);
+      type Row = { user_id: string; listing_id: string; listing: { owner_id: string; title: string } };
+      const rows = (wants ?? []) as unknown as Row[];
+      const loops = findLoops(rows.map((w) => ({ from: w.listing.owner_id, to: w.user_id, listingId: w.listing_id, cashCents: 0 })), me.id).slice(0, 3);
+      const ids = [...new Set(loops.flat().flatMap((l) => [l.from, l.to]))];
+      const { data: people } = ids.length ? await admin.from("profiles").select("id, display_name").in("id", ids) : { data: [] };
+      const name = (id: string) => (id === me.id ? "you" : people?.find((p) => p.id === id)?.display_name ?? "a student");
+      return {
+        loops: loops.map((legs) => ({
+          legs: legs.map((l) => ({ from: l.from, to: l.to, listingId: l.listingId, gives: name(l.from), receives: name(l.to), item: rows.find((w) => w.listing_id === l.listingId)?.listing.title })),
+        })),
+      };
+    }
+    case "propose_loop": {
+      const legs = (input.legs as { from: string; to: string; listingId: string }[]).map((l) => ({ ...l, cashCents: 0 }));
+      // Same transactional RPC as the trades API; the actor is the signed-in student.
+      const { data, error } = await supabaseAdmin().rpc("loop_trade_action", { p_actor: me.id, p_action: "create", p_payload: { legs } });
+      if (error) return { error: error.message.replace(/^TRADE:\d+:/, "") };
+      const trade = (data as { trade?: { id: string } }).trade;
+      return trade ? { proposed: { id: trade.id, link: `/trades/${trade.id}` } } : { error: "Couldn't propose that loop." };
     }
   }
   return { error: `Unknown tool ${name}` };

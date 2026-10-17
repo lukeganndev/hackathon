@@ -107,14 +107,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition: none !important; }
 }
-/* Official logos: transparent, no plate. White silhouette on school-color bands and in dark mode,
-   real colors on light backgrounds. ".block" logos (a colored box) keep their colors everywhere. */
-.crest.logo { width: 160px; height: 112px; object-fit: contain; }
-.band .crest.logo:not(.block), .wel .crest.logo:not(.block) { filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,.25)); }
-@media (prefers-color-scheme: dark) { .crest.logo:not(.block) { filter: brightness(0) invert(1); } }
+/* Official logos (logo.dev): square app icons with rounded corners. */
+.crest.logo { width: 112px; height: 112px; object-fit: cover; border-radius: 26px; box-shadow: 0 10px 28px -10px rgba(0,0,0,.5), 0 0 0 3px color-mix(in srgb, var(--c2) 70%, transparent); }
 .gate .crest { width: 56px; height: 66px; }
-.gate .crest.logo, .panel .crest.logo { width: 110px; height: 60px; }
-.wel .crest.logo { width: 240px; height: 164px; }
+.gate .crest.logo, .panel .crest.logo { width: 60px; height: 60px; border-radius: 15px; box-shadow: 0 4px 12px -4px rgba(0,0,0,.4); }
+.wel .crest.logo { width: 164px; height: 164px; border-radius: 38px; }
 
 /* Ask Loop AI box: soft gradient glow in school colors, orb, chips, bubbles, thinking pill. */
 @keyframes glow { 0%, 100% { background-position: 0% 50% } 50% { background-position: 100% 50% } }
@@ -143,3 +140,44 @@ button.ai-chip:hover, a.ai-chip:hover { border-color: var(--accent); }
 .think svg { width: 16px; height: 16px; animation: rays 1s steps(8) infinite; } .think line { stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; }
 .shimmer { background: linear-gradient(90deg, var(--mute) 0%, var(--ink) 50%, var(--mute) 100%); background-size: 200% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 1.6s linear infinite; }
+
+/* ---------- Mobile (from the Loop mobile design) ---------- */
+.mnav { display: none; }
+button, a, input, select { -webkit-tap-highlight-color: transparent; }
+button { touch-action: manipulation; }
+img, svg { max-width: 100%; }
+@media (hover: none) { .lcard:hover { transform: none; box-shadow: none; } }
+@media (max-width: 760px) {
+  body { overflow-x: clip; }
+  input, select, textarea { font-size: 16px; min-height: 48px; }
+  .btn, .btn-ghost { min-height: 46px; }
+  .hdr { flex-wrap: nowrap; padding: 10px 16px; padding-top: calc(10px + env(safe-area-inset-top)); }
+  .hdr .nav, .hdr .who { display: none; }
+  .page { padding: 20px 16px calc(104px + env(safe-area-inset-bottom)); }
+  .band { flex-direction: row; align-items: center; gap: 14px; padding: 22px 18px; border-radius: 18px; }
+  .band .crest, .band .crest.logo { width: 60px; height: 60px; border-radius: 15px; }
+  .band h1 { font-size: 36px; } .band small { font-size: 10px; } .band p { font-size: 12.5px; }
+  .band::after { width: 200px; height: 200px; right: -110px; top: -45px; border-width: 24px; }
+  .stats { gap: 14px 0; justify-content: space-between; font-size: 11px; } .stats > div { width: 33%; } .stats b { font-size: 22px; }
+  .seg { width: 100%; } .seg a { flex: 1; text-align: center; min-height: 40px; display: grid; place-items: center; }
+  .lgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .tile { height: 136px; } .tile .ic { width: 60px; height: 60px; }
+  .tag { font-size: 8px; left: 7px; top: 8px; max-width: calc(100% - 14px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 3px 6px; }
+  .cb { padding: 11px; } .cb h3 { font-size: 15.5px; line-height: 1.25; }
+  .crow { flex-direction: column; gap: 4px; font-size: 11px; } .crow b { font-size: 18px; }
+  .gate { padding: 24px 20px; margin: 16px auto; }
+  .ask { padding: 14px; } .ask-head p { display: none; }
+  .bubble { max-width: 90%; font-size: 14px; }
+  .mnav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; display: grid; grid-template-columns: repeat(5, 1fr);
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); background: var(--card); border-top: 1px solid var(--line); box-shadow: 0 -8px 30px rgba(0,0,0,.06); }
+  .mnav a { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 48px; justify-content: center; color: var(--mute); text-decoration: none; font-size: 10px; font-weight: 600; }
+  .mnav a[aria-current=page] { color: var(--accent); }
+  .mnav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .mnav svg.sell { background: var(--accent); color: var(--on); stroke: var(--on); border-radius: 12px; padding: 6px; width: 36px; height: 32px; margin-top: -6px; }
+  body:has(input:focus) .mnav { display: none; }
+}
+@media (max-width: 360px) { .page { padding-left: 12px; padding-right: 12px; } .band .crest { display: none; } .lgrid { gap: 9px; } }
+
+/* Typing caret for AI text */
+@keyframes blink { 50% { opacity: 0 } }
+.caret { display: inline-block; width: 2px; height: 1em; margin-left: 2px; vertical-align: -2px; background: var(--accent); animation: blink .9s steps(1) infinite; }

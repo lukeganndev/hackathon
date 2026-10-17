@@ -9,13 +9,16 @@ const EXAMPLES = [
 ];
 
 export default function Chat() {
-  const { messages, busy, status, error, send } = useLoopChat();
+  const { messages, busy, status, error, send, reset } = useLoopChat();
   const [draft, setDraft] = useState("");
   const go = async (text: string) => { setDraft(""); if (!(await send(text))) setDraft(text); };
 
   return (
     <div className="flex flex-col gap-4 max-w-2xl mx-auto">
-      <h1 className="text-3xl">Tell Loop what you have and what you want</h1>
+      <div className="flex items-end justify-between gap-3">
+        <h1 className="text-3xl">Tell Loop what you have and what you want</h1>
+        {!!messages.length && <button onClick={reset} className="btn-ghost" style={{ padding: "6px 12px", fontSize: 13 }}>New chat</button>}
+      </div>
 
       {!messages.length && (
         <div className="flex flex-col gap-2">
