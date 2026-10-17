@@ -1,12 +1,12 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~2:25pm CT. Demo at 5pm._
+_Last updated: 2026-10-17. Current deployment and Auburn addition synced._
 
 ## What Loop is
-Campus marketplace (UA first, 74 schools seeded) where an AI finds **multi-way trade loops** (A→B→C→A). .edu login picks your school and rethemes the site. Stack: Next.js 15 + Supabase (Postgres/RLS/storage, email OTP) + Claude (claude-opus-5-5) + Stripe test mode.
+Campus marketplace (UA first, 75 campuses live) where an AI finds **multi-way trade loops** (A→B→C→A). .edu login picks your school and rethemes the site. Stack: Next.js 15 + Supabase (Postgres/RLS/storage, email OTP) + Claude (claude-opus-5-5) + Stripe test mode.
 
 ## State: everything built and verified locally
-- **Live site is STALE**: https://hackathon-cszx.vercel.app is stuck at the ~2pm build. Luke's Vercel hit the free limit (100 deploys/24h). Plan: a friend deploys from their own Vercel account (`docs/vercel-deploy.md`). Then push in batches only.
+- **Current live site**: https://loop-iota-bay.vercel.app (Vercel project `loop` in scope `loop-0d15`). This deployment is managed through the Vercel CLI; GitHub pushes alone do not update this project. Luke's older URL remains stale.
 - **Latest version runs locally**: `npm run dev` → http://localhost:3000 (Claude preview config "loop-dev" in `.claude/launch.json`). Don't run `next build` while dev is running (breaks `.next`); use `npx tsc --noEmit` + `npx eslint src`.
 - **Database is shared and live** (Supabase `mfjizvmectbqgyfqqvoq`), migrations 0001–0010 all installed.
 
@@ -24,7 +24,8 @@ Campus marketplace (UA first, 74 schools seeded) where an AI finds **multi-way t
 
 ## Demo
 - Accounts: lrgann (Luke), hlpenick, egbarber (all UA). Reset before every run: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (23 listings, 3-way loop lrgann→hlpenick→egbarber; keeps completed trades/reviews; clears messages between the 3).
-- Script: `docs/pitch.md`. Moments: type `@vt.edu` on sign-in (retheme) → Ask Loop "Can I see listings for mini fridges?" (cards) → "Get me a mini fridge for my Norton Anthology" (auto loop) → others accept, meetup, codes, confetti → run `supabase/demo_add_auburn.sql` live (new school).
+- Auburn is already installed in the shared database with the user-supplied logo (`public/schools/auburn.jpg`); `supabase/demo_add_auburn.sql` is safe to rerun and preserves existing school data. Recording-only LSU sign-in helpers live outside this repository and are not deployed.
+- Script: `docs/pitch.md`. Moments: type `@vt.edu` on sign-in (retheme) → Ask Loop "Can I see listings for mini fridges?" (cards) → "Get me a mini fridge for my Norton Anthology" (auto loop) → others accept, meetup, codes, confetti → show Auburn, which is already live; rerunning its SQL will not create a fresh just-joined timestamp.
 - Any practice trade reserves items; reset after.
 
 ## Next steps
