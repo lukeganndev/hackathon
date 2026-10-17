@@ -23,7 +23,8 @@ export default function Login() {
     e.preventDefault();
     const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
     if (error) return setError(error.message);
-    const { data } = await supabase.from("profiles").select("schools(slug)").single();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data } = await supabase.from("profiles").select("schools(slug)").eq("id", user!.id).single();
     router.push(`/${(data?.schools as unknown as { slug: string })?.slug ?? ""}`);
     router.refresh();
   }

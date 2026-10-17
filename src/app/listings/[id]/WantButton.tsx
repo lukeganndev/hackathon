@@ -10,7 +10,9 @@ export function WantButton({ listingId, title, wanted }: { listingId: string; ti
 
   async function toggle() {
     setError("");
-    const { data: profile } = await supabase.from("profiles").select("id, school_id").single();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return setError("Sign in first");
+    const { data: profile } = await supabase.from("profiles").select("id, school_id").eq("id", user.id).single();
     if (!profile) return setError("Sign in first");
     const { error } = on
       ? await supabase.from("wants").update({ active: false }).eq("listing_id", listingId).eq("user_id", profile.id)

@@ -142,7 +142,9 @@ async function runTool(name: string, input: Record<string, unknown>, db: Supabas
 
 export async function POST(req: Request) {
   const db = await supabaseServer();
-  const { data: me } = await db.from("profiles").select("id, school_id").single();
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return Response.json({ error: "Sign in first" }, { status: 401 });
+  const { data: me } = await db.from("profiles").select("id, school_id").eq("id", user.id).single();
   if (!me) return Response.json({ error: "Sign in first" }, { status: 401 });
 
   const { messages } = (await req.json()) as { messages: Anthropic.Beta.BetaMessageParam[] };

@@ -68,7 +68,9 @@ export default function NewListing() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const { data: profile } = await supabase.from("profiles").select("id, school_id").single();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return router.push("/login");
+    const { data: profile } = await supabase.from("profiles").select("id, school_id").eq("id", user.id).single();
     if (!profile) return router.push("/login");
     const cents = (v: string) => (v ? Math.round(parseFloat(v) * 100) : null);
     const details =
