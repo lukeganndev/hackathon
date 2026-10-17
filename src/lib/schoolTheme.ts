@@ -22,6 +22,8 @@ export const shortName = (name: string) => name.replace(/^The /, "").replace("Un
 export function initials(s: Pick<School, "name" | "slug">) {
   const words = shortName(s.name).split(/\s+/);
   if (/&/.test(s.name)) return "A&M";
+  const uof = s.name.match(/^(?:The )?University of (\w)/);
+  if (uof) return "U" + uof[1].toUpperCase();
   if (/^[A-Z]{2,4}$/.test(words[0])) return words[0];
   if (s.slug.length <= 3) return s.slug.toUpperCase();
   return words.length > 1 ? words[0][0] + words[1][0] : words[0].slice(0, 2).toUpperCase();

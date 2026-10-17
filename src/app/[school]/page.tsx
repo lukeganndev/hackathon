@@ -37,7 +37,7 @@ export default async function SchoolPage({ params, searchParams }: {
   const [{ data: cardSchools }, { data: recent }, { data: newSchools }, { count: campuses }] = await Promise.all([
     supabase.from("schools").select("id, name, colors, email_domains").in("id", ids),
     supabase.from("listings").select("title, status, school:schools(name)").order("created_at", { ascending: false }).limit(12),
-    supabase.from("schools").select("id, slug, name, colors, slogan, logo_url").neq("id", school.id).gte("created_at", since),
+    supabase.from("schools").select("id, slug, name, colors, slogan, logo_url").neq("id", school.id).gte("created_at", since).order("created_at", { ascending: false }).limit(1),
     supabase.from("schools").select("id", { count: "exact", head: true }),
   ]);
   const byId = Object.fromEntries((cardSchools ?? []).map((s) => [s.id, s]));
