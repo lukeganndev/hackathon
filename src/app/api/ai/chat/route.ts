@@ -22,7 +22,8 @@ Rules:
 - Tickets must be posted with the photo form (ticket rules apply), not here. Say so.
 - Services (tutoring, haircut, nails, moving help) and rides are listings too (kind "service" or "ride").
 - Rides need from, to, and a departure date/time before you post. Ask for whichever is missing. Pickup spot is optional. Turn "Friday 3pm" into an exact date using today's date from the first message.
-- Trades and loops: when the student wants to trade something or asks for a loop, make sure their have (create_listing or my_listings) and want (add_want with a listing_id) are saved, then call find_loops. If it finds a loop, describe it in one short line per person (who gives what to whom) and ask if they want you to propose it. Only call propose_loop after they say yes, passing the legs exactly as find_loops returned them. If there's no loop yet, say their want is saved and Loop will find a loop when someone posts a match.
+- Browsing: when the student asks to see or find listings ("show me mini fridges"), call search_listings. The app shows the results as listing cards under your message, so just say one short line like "Here are 3 mini fridges on campus." Never list them out in text.
+- Trades and loops: when the student wants to trade something for something ("a mini fridge for my Iron Bowl ticket") or asks for a loop, make sure their have (my_listings, or create_listing if it isn't posted) and want (search_listings, then add_want with the matching listing_id) are saved, then call find_loops. If it finds a loop, call propose_loop right away with the legs exactly as find_loops returned them (everyone still has to accept in the app, so this is safe), then say in one or two lines who gives what to whom and that you started the loop. The app shows a loop card. If there's no loop yet, say their want is saved and Loop will start a loop as soon as someone posts a match.
 - If a tool says something is not allowed, tell the student kindly why and don't try to post it another way.
 - Only describe what you actually saved. Never promise features Loop doesn't have (notifications, messaging, payments for rides).
 - After saving, confirm in one or two plain sentences what you saved. No markdown headers.`;
@@ -105,7 +106,7 @@ const tools: Anthropic.Beta.BetaTool[] = [
   },
   {
     name: "propose_loop",
-    description: "Propose a loop from find_loops as a trade. Only after the student says yes.",
+    description: "Start a loop found by find_loops as a trade. Everyone in it still has to accept in the app.",
     strict: true,
     input_schema: {
       type: "object",
@@ -132,7 +133,7 @@ const STATUS: Record<string, string> = {
   create_listing: "Posting your listing and checking who wants it…",
   add_want: "Saving what you want…",
   find_loops: "Looking for a trade loop across campus…",
-  propose_loop: "Proposing the loop to everyone…",
+  propose_loop: "Starting a loop…",
 };
 
 export const maxDuration = 60;
@@ -143,8 +144,9 @@ type Profile = { id: string; school_id: string };
 async function runTool(name: string, input: Record<string, unknown>, db: Supabase, me: Profile) {
   switch (name) {
     case "search_listings": {
-      const words = String(input.query).split(/\s+/).filter(Boolean).slice(0, 3);
-      let q = db.from("listings").select("id, title, price_cents, kind, school:schools(name)")
+      // Loose plural matching: "fridges" finds "Mini fridge".
+      const words = String(input.query).split(/\s+/).filter(Boolean).slice(0, 3).map((w) => (w.length > 4 ? w.replace(/(es|s)$/i, "") : w));
+      let q = db.from("listings").select("id, title, price_cents, kind, category, photo_url, school:schools(name, colors, email_domains)")
         .eq("status", "active").neq("owner_id", me.id).limit(8);
       for (const w of words) q = q.ilike("title", `%${w.replace(/[%_]/g, "")}%`);
       const { data, error } = await q;

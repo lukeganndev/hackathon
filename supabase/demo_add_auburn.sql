@@ -3,7 +3,7 @@ insert into schools (slug, name, email_domains, colors, slogan, logo_url, meetup
   'auburn',
   'Auburn University',
   '{auburn.edu}',
-  '{"primary":"#03244D","secondary":"#DD550C","banner":"https://mfjizvmectbqgyfqqvoq.supabase.co/storage/v1/object/public/listing-photos/banners/auburn.jpg"}',
+  '{"primary":"#03244D","secondary":"#DD550C"}',
   'War Eagle',
   'https://mfjizvmectbqgyfqqvoq.supabase.co/storage/v1/object/public/listing-photos/logos/icon-auburn.png',
   '[{"name":"Melton Student Center","lat":32.6036,"lng":-85.4876},

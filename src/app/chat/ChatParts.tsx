@@ -2,30 +2,34 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type Anthropic from "@anthropic-ai/sdk";
+import { ListingCard, type CardListing, type CardSchool } from "../ListingCard";
 
 type Msg = Anthropic.Beta.BetaMessageParam;
+export type Conv = { id: string; title: string; messages: Msg[]; updated: number };
+type Store = { convs: Conv[]; current: string | null };
 
-// Shared by the full /chat page and the Ask Loop box on the campus page.
+// Saved conversations, shared by the Ask Loop box on the campus page and the full Ask Loop screen.
 // The browser keeps the raw history (thinking blocks included) and sends it back unchanged.
-const KEY = "loop-chat";
+const KEY = "loop-chats";
+const load = (): Store => { try { return JSON.parse(localStorage.getItem(KEY) ?? "") as Store; } catch { return { convs: [], current: null }; } };
+const save = (s: Store) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
+/** Forget all saved conversations (on sign-out). */
+export const clearLoopChat = () => { try { localStorage.removeItem(KEY); localStorage.removeItem("loop-chat"); } catch {} };
+
 // AI texts already shown in this browser session: never retype them after a page change.
 const seen = new Set<string>();
-/** Forget the saved conversation (on sign-out or "New chat"). */
-export const clearLoopChat = () => { try { localStorage.removeItem(KEY); } catch {} };
 
 export function useLoopChat() {
-  const [messages, setMessages] = useState<Msg[]>([]);
-  // Keep the conversation across page changes and tabs (same browser only).
+  const [store, setStore] = useState<Store>({ convs: [], current: null });
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(KEY);
-      if (!saved) return;
-      const msgs: Msg[] = JSON.parse(saved);
-      render(msgs).forEach((r) => r.who === "ai" && seen.add(r.text));
-      setMessages(msgs);
-    } catch {}
+    const s = load();
+    s.convs.forEach((c) => render(c.messages).forEach((r) => r.kind === "ai" && seen.add(r.text)));
+    setStore(s);
   }, []);
-  useEffect(() => { try { if (messages.length) localStorage.setItem(KEY, JSON.stringify(messages)); } catch {} }, [messages]);
+  const update = (fn: (s: Store) => Store) => setStore((old) => { const next = fn(old); save(next); return next; });
+
+  const conv = store.convs.find((c) => c.id === store.current) ?? null;
+  const messages = conv?.messages ?? [];
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -35,9 +39,16 @@ export function useLoopChat() {
     setError("");
     setBusy(true);
     setStatus("");
-    const next: Msg[] = [...messages, { role: "user", content: text }];
-    setMessages(next);
-    const fail = (msg: string) => { setBusy(false); setStatus(""); setMessages(messages); setError(msg); return false; };
+    const id = conv?.id ?? crypto.randomUUID();
+    const title = conv?.title ?? text.slice(0, 48);
+    const before = messages;
+    const write = (msgs: Msg[]) => update((s) => ({
+      current: id,
+      convs: [{ id, title, messages: msgs, updated: Date.now() }, ...s.convs.filter((c) => c.id !== id)],
+    }));
+    const next: Msg[] = [...before, { role: "user", content: text }];
+    write(next);
+    const fail = (msg: string) => { setBusy(false); setStatus(""); write(before); setError(msg); return false; };
     const res = await fetch("/api/ai/chat", { method: "POST", body: JSON.stringify({ messages: next }) });
     if (!res.ok || !res.body) return fail((await res.json().catch(() => ({}))).error ?? "Something went wrong");
     // Progress lines arrive as the agent works; the last line has the full history.
@@ -53,7 +64,7 @@ export function useLoopChat() {
         const ev = JSON.parse(line);
         if (ev.status) setStatus(ev.status);
         if (ev.error) return fail(ev.error);
-        if (ev.messages) setMessages(ev.messages);
+        if (ev.messages) write(ev.messages);
       }
     }
     setBusy(false);
@@ -61,47 +72,85 @@ export function useLoopChat() {
     return true;
   }
 
-  const reset = () => { clearLoopChat(); setMessages([]); setError(""); };
-  return { messages, busy, status, error, send, reset };
+  return {
+    messages, busy, status, error, send,
+    convs: store.convs, current: store.current,
+    open: (id: string) => update((s) => ({ ...s, current: id })),
+    reset: () => { update((s) => ({ ...s, current: null })); setError(""); },
+    remove: (id: string) => update((s) => ({ current: s.current === id ? null : s.current, convs: s.convs.filter((c) => c.id !== id) })),
+  };
 }
 
-// What the student sees: their own words, Claude's text, and a chip per saved have/want.
-export function render(messages: Msg[]) {
-  const out: { who: "me" | "ai" | "chip"; text: string; href?: string }[] = [];
+type Listing = CardListing & { school?: CardSchool };
+type Leg = { gives: string; receives: string; item?: string };
+type Item =
+  | { kind: "me" | "ai"; text: string }
+  | { kind: "chip"; text: string; href?: string }
+  | { kind: "listings"; listings: Listing[] }
+  | { kind: "loop"; legs: Leg[]; tradeId?: string };
+
+// What the student sees: their words, Claude's text, and cards for what the tools did.
+export function render(messages: Msg[]): Item[] {
+  const out: Item[] = [];
+  let lastLoop: Leg[] = [];
   for (const m of messages) {
-    if (typeof m.content === "string") { out.push({ who: m.role === "user" ? "me" : "ai", text: m.content }); continue; }
+    if (typeof m.content === "string") { out.push({ kind: m.role === "user" ? "me" : "ai", text: m.content }); continue; }
     for (const b of m.content) {
       // Hide the "(Today is …)" date note the server adds to the first message.
-      if (b.type === "text" && b.text.trim()) out.push({ who: m.role === "user" ? "me" : "ai", text: b.text.replace(/^\(Today is [^)]*\)\s*/, "") });
-      if (b.type === "tool_result" && typeof b.content === "string" && !b.is_error) {
-        const saved = JSON.parse(b.content).saved;
-        if (saved?.title) out.push({ who: "chip", text: `📦 Listed: ${saved.title}`, href: `/listings/${saved.id}` });
-        if (saved?.text) out.push({ who: "chip", text: `🔍 Wants: ${saved.text}${saved.listing_id ? " (matched a listing)" : ""}`, href: saved.listing_id ? `/listings/${saved.listing_id}` : undefined });
-        const r = JSON.parse(b.content);
-        if (r.loops?.length) out.push({ who: "chip", text: `🔁 Found ${r.loops.length === 1 ? "a" : r.loops.length} ${r.loops[0].legs.length}-person loop${r.loops.length > 1 ? "s" : ""}`, href: "/trades" });
-        if (r.proposed?.id) out.push({ who: "chip", text: "✅ Loop proposed: open the trade", href: `/trades/${r.proposed.id}` });
+      if (b.type === "text" && b.text.trim()) out.push({ kind: m.role === "user" ? "me" : "ai", text: b.text.replace(/^\(Today is [^)]*\)\s*/, "") });
+      if (b.type !== "tool_result" || typeof b.content !== "string" || b.is_error) continue;
+      const r = JSON.parse(b.content);
+      if (r.saved?.title) out.push({ kind: "chip", text: `📦 Listed: ${r.saved.title}`, href: `/listings/${r.saved.id}` });
+      if (r.saved?.text) out.push({ kind: "chip", text: `🔍 Wants: ${r.saved.text}${r.saved.listing_id ? " (matched)" : ""}`, href: r.saved.listing_id ? `/listings/${r.saved.listing_id}` : undefined });
+      if (r.results?.length && r.results[0].school) out.push({ kind: "listings", listings: r.results });
+      if (r.loops?.length) { lastLoop = r.loops[0].legs; out.push({ kind: "loop", legs: lastLoop }); }
+      if (r.proposed?.id) {
+        // Swap the "found" card for a "started" card.
+        let i = out.length - 1;
+        while (i >= 0 && out[i].kind !== "loop") i--;
+        if (i >= 0) out.splice(i, 1);
+        out.push({ kind: "loop", legs: lastLoop, tradeId: r.proposed.id });
       }
     }
   }
   return out;
 }
 
+function LoopCard({ legs, tradeId }: { legs: Leg[]; tradeId?: string }) {
+  return (
+    <div className="loop-card">
+      <div className="loop-card-head">
+        <span className="loop-spin" aria-hidden>↻</span>
+        <b>{tradeId ? "Loop started!" : `Found a ${legs.length}-person loop`}</b>
+      </div>
+      <ol>{legs.map((l, i) => <li key={i}><b>{l.gives}</b> gives <i>{l.item ?? "an item"}</i> to <b>{l.receives}</b></li>)}</ol>
+      {tradeId
+        ? <Link href={`/trades/${tradeId}`} className="btn" style={{ padding: "8px 14px" }}>Open the trade →</Link>
+        : <Link href="/trades" className="btn-ghost" style={{ padding: "8px 14px" }}>See loops →</Link>}
+    </div>
+  );
+}
+
 export function Thread({ messages }: { messages: Msg[] }) {
   return (
     <>
-      {render(messages).map((r, i) =>
-        r.who === "chip" ? (
-          r.href
-            ? <Link key={`c${i}:${r.text}`} href={r.href} className="ai-chip">{r.text}</Link>
-            : <span key={`c${i}:${r.text}`} className="ai-chip">{r.text}</span>
-        ) : (
-          <p key={`${r.who}:${r.text}`} className={`bubble ${r.who === "me" ? "me" : "ai"}`}>{r.who === "ai" ? <TypeText text={r.text} /> : r.text}</p>
-        ))}
+      {render(messages).map((r, i) => {
+        if (r.kind === "chip") return r.href
+          ? <Link key={`c${i}:${r.text}`} href={r.href} className="ai-chip">{r.text}</Link>
+          : <span key={`c${i}:${r.text}`} className="ai-chip">{r.text}</span>;
+        if (r.kind === "listings") return (
+          <div key={`l${i}`} className="chat-cards">
+            {r.listings.slice(0, 8).map((l, j) => l.school && <ListingCard key={l.id} l={l} school={l.school} delay={j * 60} />)}
+          </div>
+        );
+        if (r.kind === "loop") return <LoopCard key={`o${i}:${r.tradeId ?? ""}`} legs={r.legs} tradeId={r.tradeId} />;
+        return <p key={`${r.kind}:${r.text}`} className={`bubble ${r.kind}`}>{r.kind === "ai" ? <TypeText text={r.text} /> : r.text}</p>;
+      })}
     </>
   );
 }
 
-/** Reveals text word by word on first mount, like it's being typed. Already-shown bubbles stay put. */
+/** Reveals text word by word on first mount, like it's being typed. Already-shown text stays put. */
 export function TypeText({ text, speed = 28 }: { text: string; speed?: number }) {
   const words = text.split(/(\s+)/);
   const [n, setN] = useState(() => (seen.has(text) ? words.length : 0));

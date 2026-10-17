@@ -53,8 +53,7 @@ export default async function SchoolPage({ params, searchParams }: {
         </Link>
       ))}
 
-      <section className={`band${school.colors.banner ? " has-banner" : ""}`}
-        style={school.colors.banner ? { "--banner": `url("${school.colors.banner}")` } as React.CSSProperties : undefined}>
+      <section className="band">
         <Crest school={school as School} />
         <div style={{ position: "relative", zIndex: 1 }}>
           <small>{school.name} · verified {school.email_domains?.[0]}</small>

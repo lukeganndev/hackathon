@@ -54,7 +54,7 @@ const rows = must(await db.from("listings").insert([
   listing(b, { title: "On Cloud running shoes, men's size 10", description: "Worn about 10 times, too small for me.", category: "clothing", price_cents: 4500, photo_url: PHOTOS.shoes.photo_url, details: { photo_credit: PHOTOS.shoes.credit } }),
   listing(c, { title: "Iron Bowl ticket, upper deck", description: "Transfers through the official ticket account.", category: "tickets", ticket_type: "football_general", face_value_cents: 9000, price_cents: 9000 }),
   // Filler so the feed looks alive
-  listing(a, { title: "Mini fridge, 3.1 cu ft", description: "Works great, moving out of the dorm.", category: "dorm", price_cents: 6000 }),
+  listing(b, { title: "Mini fridge, 3.1 cu ft", description: "Works great, moving out of the dorm.", category: "dorm", price_cents: 6000 }),
   listing(b, { title: "TI-84 Plus graphing calculator", description: "Batteries included.", category: "electronics", price_cents: 5500, photo_url: PHOTOS.calc.photo_url, details: { photo_credit: PHOTOS.calc.credit } }),
   listing(c, { title: "Desk lamp with USB port", description: "LED, three brightness levels.", category: "dorm", price_cents: null, photo_url: PHOTOS.lamp.photo_url, details: { photo_credit: PHOTOS.lamp.credit } }),
   listing(b, { kind: "service", title: "CH 101 tutoring", description: "Got an A last spring. Library or Zoom.", category: "tutoring", price_cents: 2000, details: { unit: "hour", course: "CH 101" } }),

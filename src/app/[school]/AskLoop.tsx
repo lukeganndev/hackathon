@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Thread, ThinkingPill, useLoopChat } from "../chat/ChatParts";
 
-const SUGGESTIONS = ["Find me a trade loop", "Trade my calc textbook for a mini fridge", "Find me a CH 101 tutor"];
+const SUGGESTIONS = ["Get me a mini fridge for my Norton Anthology", "Can I see listings for mini fridges?", "Find me a trade loop"];
 
 // Inline AI box under the campus banner: say what you have or want, Loop lists and matches it.
 export function AskLoop({ shortName }: { shortName: string }) {
@@ -33,7 +33,7 @@ export function AskLoop({ shortName }: { shortName: string }) {
 
       {!!messages.length && (
         <div className="ask-thread" aria-live="polite">
-          <Thread messages={messages.slice(-4)} />
+          <Thread messages={messages.slice(-6)} />
         </div>
       )}
       {busy && <ThinkingPill label={status} />}
