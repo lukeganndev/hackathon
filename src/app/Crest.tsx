@@ -1,10 +1,12 @@
 import { ink, initials, type School } from "@/lib/schoolTheme";
 
-// School crest: the official logo if the school row has one, otherwise a shield with
-// initials in school colors (from the design).
+// School crest: the official logo if the school row has one (from Wikimedia Commons via
+// Wikidata), otherwise a shield with initials in school colors (from the design).
 export function Crest({ school, className = "crest" }: { school: Pick<School, "name" | "slug" | "colors" | "logo_url">; className?: string }) {
   if (school.logo_url) {
-    return <img className={className} src={school.logo_url} alt={`${school.name} logo`} style={{ objectFit: "contain", filter: "drop-shadow(0 4px 10px rgba(0,0,0,.28))" }} />;
+    // Official logo on a white plate so dark logos stay readable on school-color bands.
+    return <img className={className} src={school.logo_url} alt={`${school.name} logo`}
+      style={{ objectFit: "contain", background: "#fff", borderRadius: 14, padding: 8, boxShadow: "0 4px 14px rgba(0,0,0,.25)" }} />;
   }
   const a = initials(school), c = school.colors.primary, c2 = school.colors.secondary ?? "#828A8F", k = ink(c);
   return (
