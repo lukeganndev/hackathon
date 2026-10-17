@@ -17,7 +17,8 @@ function render(messages: Msg[]) {
   for (const m of messages) {
     if (typeof m.content === "string") { out.push({ who: m.role === "user" ? "me" : "ai", text: m.content }); continue; }
     for (const b of m.content) {
-      if (b.type === "text" && b.text.trim()) out.push({ who: m.role === "user" ? "me" : "ai", text: b.text });
+      // Hide the "(Today is …)" date note the server adds to the first message.
+      if (b.type === "text" && b.text.trim()) out.push({ who: m.role === "user" ? "me" : "ai", text: b.text.replace(/^\(Today is [^)]*\)\s*/, "") });
       if (b.type === "tool_result" && typeof b.content === "string" && !b.is_error) {
         const saved = JSON.parse(b.content).saved;
         if (saved?.title) out.push({ who: "chip", text: `📦 Listed: ${saved.title}`, href: `/listings/${saved.id}` });

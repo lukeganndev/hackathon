@@ -18,6 +18,8 @@ Rules:
 - Prices are in cents. "sell for $25" = price_cents 2500. "trade only" = price_cents null.
 - Tickets must be posted with the photo form (ticket rules apply), not here. Say so.
 - Services (tutoring, haircut, nails, moving help) and rides are listings too (kind "service" or "ride").
+- Rides need from, to, and a departure date/time before you post. Ask for whichever is missing. Pickup spot is optional. Turn "Friday 3pm" into an exact date using today's date from the first message.
+- Only describe what you actually saved. Never promise features Loop doesn't have (notifications, messaging, payments for rides).
 - After saving, confirm in one or two plain sentences what you saved. No markdown headers.`;
 
 const nullable = (type: string) => ({ type: [type, "null"] });
@@ -54,9 +56,24 @@ const tools: Anthropic.Beta.BetaTool[] = [
           type: "string",
           enum: ["textbooks", "clothing", "furniture", "electronics", "dorm", "lab", "tutoring", "haircut", "nails", "moving_help", "rides", "other"],
         },
-        price_cents: { ...nullable("integer"), description: "null = trade only" },
+        price_cents: { ...nullable("integer"), description: "null = trade only. Ride: gas share per seat. Service: price per unit." },
+        details: {
+          type: "object",
+          description: "Ride and service fields. Use null for anything that doesn't apply.",
+          properties: {
+            from: { ...nullable("string"), description: "Ride start city" },
+            to: { ...nullable("string"), description: "Ride destination city" },
+            depart_at: { ...nullable("string"), description: "Ride departure, local time, YYYY-MM-DDTHH:MM" },
+            seats: nullable("integer"),
+            pickup: { ...nullable("string"), description: "Ride pickup spot, e.g. 'Ferguson Center lot'" },
+            unit: { anyOf: [{ type: "string", enum: ["hour", "session"] }, { type: "null" }], description: "Service priced per" },
+            course: { ...nullable("string"), description: "Tutoring course code, e.g. 'CH 101'" },
+          },
+          required: ["from", "to", "depart_at", "seats", "pickup", "unit", "course"],
+          additionalProperties: false,
+        },
       },
-      required: ["title", "description", "kind", "category", "price_cents"],
+      required: ["title", "description", "kind", "category", "price_cents", "details"],
       additionalProperties: false,
     },
   },
@@ -105,7 +122,9 @@ async function runTool(name: string, input: Record<string, unknown>, db: Supabas
       return error ? { error: error.message } : { results: data };
     }
     case "create_listing": {
-      const { data, error } = await db.from("listings").insert({ ...input, owner_id: me.id, school_id: me.school_id })
+      // Drop the null detail fields so listings only store what applies.
+      const details = Object.fromEntries(Object.entries(input.details as object).filter(([, v]) => v != null));
+      const { data, error } = await db.from("listings").insert({ ...input, details, owner_id: me.id, school_id: me.school_id })
         .select("id, title").single();
       return error ? { error: error.message } : { saved: data };
     }
@@ -125,6 +144,13 @@ export async function POST(req: Request) {
 
   const { messages } = (await req.json()) as { messages: Anthropic.Beta.BetaMessageParam[] };
   if (!Array.isArray(messages) || !messages.length) return Response.json({ error: "No message" }, { status: 400 });
+  // Date goes into the first message (not the system prompt) so the history stays append-only.
+  if (messages.length === 1 && typeof messages[0].content === "string") {
+    const today = new Date().toLocaleString("en-US", { timeZone: "America/Chicago", weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" });
+    messages[0].content = [{ type: "text", text: `(Today is ${today}, Central time.)
+
+${messages[0].content}` }];
+  }
 
   // Streams newline-delimited JSON: {status} lines while working, then {messages} or {error}.
   const enc = new TextEncoder();
