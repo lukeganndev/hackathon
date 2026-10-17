@@ -76,4 +76,5 @@ Team: 3 beginners using Codex + Claude.
 3. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas
+- VERCEL BLOCKED: Hobby "young team" limit hit (>100 deployments/24h, code api-deployments-young-hobby-team-24h). Live site stuck at 0186e9c (~2pm). Fix: start Vercel Pro trial, or demo from `npm run dev` (localhost:3000, `.claude/launch.json` "loop-dev"). Batch pushes from now on.
 - On Windows, clone with `git -c core.longpaths=true clone ...` if the path is long.
