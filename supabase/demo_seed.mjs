@@ -24,6 +24,9 @@ if (demoIds.length) {
 }
 must(await db.from("listings").delete().eq("details->>demo", "true").not("status", "in", "(sold,traded)"));
 must(await db.from("wants").delete().like("text", "[demo]%"));
+// Practice messages between the demo accounts.
+const ids = people.map((p) => p.id);
+must(await db.from("messages").delete().in("sender_id", ids).in("recipient_id", ids));
 
 // Freely licensed photos (Wikimedia Commons), copied into our bucket under demo/. Credit shown on the listing page.
 const photo = (name, credit, ext = "jpg") => ({ photo_url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-photos/demo/${name}.${ext}`, credit });

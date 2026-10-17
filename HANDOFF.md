@@ -8,7 +8,7 @@ Campus marketplace (UA first, 74 schools seeded) where an AI finds **multi-way t
 ## State: everything built and verified locally
 - **Live site is STALE**: https://hackathon-cszx.vercel.app is stuck at the ~2pm build. Luke's Vercel hit the free limit (100 deploys/24h). Plan: a friend deploys from their own Vercel account (`docs/vercel-deploy.md`). Then push in batches only.
 - **Latest version runs locally**: `npm run dev` → http://localhost:3000 (Claude preview config "loop-dev" in `.claude/launch.json`). Don't run `next build` while dev is running (breaks `.next`); use `npx tsc --noEmit` + `npx eslint src`.
-- **Database is shared and live** (Supabase `mfjizvmectbqgyfqqvoq`), migrations 0001–0009 all installed.
+- **Database is shared and live** (Supabase `mfjizvmectbqgyfqqvoq`), migrations 0001–0010 all installed.
 
 ## Features (where to look)
 - Sign-in gate with live school preview + welcome splash: `src/app/login/LoginGate.tsx`. Signup trigger matches email domain incl. subdomains.
@@ -18,11 +18,12 @@ Campus marketplace (UA first, 74 schools seeded) where an AI finds **multi-way t
 - Trades (Friend C, restyled by Luke): `/trades`, `/trades/[id]`, RPC `loop_trade_action` (0002/0004), Stripe holds `src/lib/stripeHolds.ts`, confetti on close.
 - Reviews: popup after a trade closes (`trades/_components/ReviewPopup.tsx`, reuses `listings/mine/RateForm.tsx`). Profile `/u/[id]`: listing cards, completed trades with their reviews (legs read via admin client), clickable stars open all reviews (`u/Reviews.tsx`). My stuff `/listings/mine`: have/want as cards. Popups are native `<dialog className="modal">`.
 - Header chip = account menu (`AccountMenu` in `src/app/HeaderClient.tsx`): profile, My stuff, loops, post, chats, all campuses, `/settings` (display name, filtered by 0009; clear chats; sign out).
+- Messages `/messages` (`src/app/messages/`, table 0010, realtime, blocklist): "I want this" / "Message seller" on a listing opens an offer popup (`listings/[id]/WantButton.tsx`). Unread badge on the nav tab. Sold/traded listings render a SOLD/TRADED page (`SoldPage` in `listings/[id]/page.tsx`).
 - Also: wants that wait (`src/lib/matchWants.ts`), ratings (0005), reports (0003), Buy button, mobile tab bar.
 - Branding: logo.dev icons for all 75 schools in bucket `logos/icon-<slug>.png` (`schools.logo_url`), shown near-square. **No banner photos** (Luke said no). Design tokens in `src/app/globals.css`.
 
 ## Demo
-- Accounts: lrgann (Luke), hlpenick, egbarber (all UA). Reset before every run: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (23 listings, 3-way loop lrgann→hlpenick→egbarber; keeps completed trades/reviews).
+- Accounts: lrgann (Luke), hlpenick, egbarber (all UA). Reset before every run: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (23 listings, 3-way loop lrgann→hlpenick→egbarber; keeps completed trades/reviews; clears messages between the 3).
 - Script: `docs/pitch.md`. Moments: type `@vt.edu` on sign-in (retheme) → Ask Loop "Can I see listings for mini fridges?" (cards) → "Get me a mini fridge for my Norton Anthology" (auto loop) → others accept, meetup, codes, confetti → run `supabase/demo_add_auburn.sql` live (new school).
 - Any practice trade reserves items; reset after.
 

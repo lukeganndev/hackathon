@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabaseAdmin, supabaseServer } from "@/lib/supabase/server";
-import { themeVars } from "@/lib/schoolTheme";
-import { ListingCard, type CardListing, type CardSchool } from "../../ListingCard";
-import { ReviewItem, ReviewsButton, type Review } from "../Reviews";
+import { ink, themeVars } from "@/lib/schoolTheme";
+import { ListingCard, IC, icon, type CardListing, type CardSchool } from "../../ListingCard";
+import { ReviewsButton, type Review } from "../Reviews";
 
 const CARD = "id, title, price_cents, photo_url, category, status, school:schools(name, colors, email_domains)";
 type Card = CardListing & { school: CardSchool };
@@ -67,18 +67,21 @@ export default async function Profile({ params }: { params: Promise<{ id: string
           const other = gave ? leg.receiver_id : leg.giver_id;
           const legReviews = all.filter((r) => r.trade_leg_id === leg.id);
           return (
-            <article key={leg.id} className="done-trade panel" style={{ animation: `up .5s ${i * 60}ms both` }}>
-              {l && <ListingCard l={l} school={l.school} />}
-              <div className="flex flex-col gap-2">
-                <p className="text-lg">
-                  {gave ? "Gave" : "Got"} <b>{l?.title ?? "an item"}</b> {gave ? "to" : "from"}{" "}
-                  <Link href={`/u/${other}`} className="underline">{nameOf(other)}</Link>
-                </p>
-                <small style={{ color: "var(--mute)" }}>✓ Handoff confirmed by code · {new Date(leg.confirmed_at!).toLocaleDateString()}</small>
-                {legReviews.length ? legReviews.map((r) => <ReviewItem key={r.id} r={r} />)
-                  : <p style={{ color: "var(--mute)", fontSize: 14 }}>No review for this one yet.</p>}
+            <Link key={leg.id} href={l ? `/listings/${l.id}` : "#"} className="done-trade panel" style={{ animation: `up .5s ${i * 60}ms both` }}>
+              <div className="done-thumb" style={{ background: l?.school.colors.primary, color: ink(l?.school.colors.primary ?? "#888") }}>
+                {l?.photo_url ? <img src={l.photo_url} alt="" /> : <svg className="ic" viewBox="0 0 24 24" aria-hidden><path d={IC[icon(l?.title ?? "", l?.category)]} /></svg>}
               </div>
-            </article>
+              <div className="flex flex-col gap-1" style={{ minWidth: 0, flex: 1 }}>
+                <h3>{gave ? "Gave" : "Got"} {l?.title ?? "an item"} {gave ? "to" : "from"} {nameOf(other)}</h3>
+                <small style={{ color: "var(--mute)", fontSize: 13 }}>✓ Handoff confirmed by code · {new Date(leg.confirmed_at!).toLocaleDateString()}</small>
+                {legReviews.length ? legReviews.map((r) => (
+                  <p key={r.id} className="review" style={{ margin: 0 }}>
+                    <span><span className="text-amber-500">{"★".repeat(r.stars)}{"☆".repeat(5 - r.stars)}</span>{r.comment && <> “{r.comment}”</>} <small>· {r.rater.display_name}</small></span>
+                  </p>
+                )) : <small style={{ color: "var(--mute)", fontSize: 13 }}>No review for this one yet.</small>}
+              </div>
+              <span aria-hidden style={{ color: "var(--mute)" }}>↗</span>
+            </Link>
           );
         })}
       </section>

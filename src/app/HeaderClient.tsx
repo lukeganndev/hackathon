@@ -6,15 +6,15 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { LoopMark } from "./Crest";
 import { clearLoopChat } from "./chat/ChatParts";
 
-export function Nav({ slug }: { slug: string }) {
+export function Nav({ slug, unread }: { slug: string; unread: number }) {
   const path = usePathname();
   const links: [string, string][] = [
-    [`/${slug}`, "Browse"], ["/listings/new", "Sell"], ["/chat", "Ask Loop"], ["/trades", "Loops"], ["/listings/mine", "My stuff"],
+    [`/${slug}`, "Browse"], ["/listings/new", "Sell"], ["/chat", "Ask Loop"], ["/trades", "Loops"], ["/messages", "Messages"], ["/listings/mine", "My stuff"],
   ];
   return (
     <nav className="nav" aria-label="Main">
       {links.map(([href, label]) => (
-        <Link key={href} href={href} aria-current={path === href || (href === "/trades" && path.startsWith("/trades")) ? "page" : undefined}>{label}</Link>
+        <Link key={href} href={href} aria-current={path === href || (href === "/trades" && path.startsWith("/trades")) ? "page" : undefined}>{label}{href === "/messages" && unread > 0 && <span className="badge-dot">{unread}</span>}</Link>
       ))}
     </nav>
   );
@@ -66,11 +66,15 @@ export function AccountMenu({ userId, name, school, slug }: { userId: string; na
     return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
   }, [open]);
   const items: [string, string, string][] = [
-    [`/u/${userId}`, "👤", "View my profile"], ["/listings/mine", "📦", "My listings & wants"], ["/trades", "↻", "My loops"],
-    ["/listings/new", "＋", "Post something"], ["/chat", "💬", "Ask Loop chats"], [`/${slug}?all=1`, "🌐", "Browse all campuses"],
-    ["/settings", "⚙️", "Settings"],
-  ];
-  return (
+    [`/u/${userId}`, TAB_ICONS.Me, "View my profile"],
+    ["/listings/mine", "M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10", "My listings & wants"],
+    ["/trades", TAB_ICONS.Loops, "My loops"],
+    ["/listings/new", TAB_ICONS.Sell, "Post something"],
+    ["/messages", "M4 4h16v12H8l-4 4zM8 9h8M8 12h5", "Messages & offers"],
+    ["/chat", TAB_ICONS.Ask, "Ask Loop chats"],
+    [`/${slug}?all=1`, "M12 21a9 9 0 100-18 9 9 0 000 18zM3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18", "Browse all campuses"],
+    ["/settings", "M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z", "Settings"],
+  ];  return (
     <div className="acct" ref={ref}>
       <button className="chip who" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
         <i className="dot" /><span className="who-text">{school} · </span>{name}<span aria-hidden className={open ? "caret-up" : ""}>▾</span>
@@ -81,8 +85,8 @@ export function AccountMenu({ userId, name, school, slug }: { userId: string; na
             <span className="acct-av" aria-hidden>{name[0]?.toUpperCase()}</span>
             <div><b>{name}</b><small>{school} · .edu verified</small></div>
           </div>
-          {items.map(([href, ic, label]) => <Link key={href} href={href} role="menuitem"><span aria-hidden>{ic}</span>{label}</Link>)}
-          <button role="menuitem" onClick={signOut}><span aria-hidden>⎋</span>Sign out</button>
+          {items.map(([href, d, label]) => <Link key={href} href={href} role="menuitem"><svg viewBox="0 0 24 24" aria-hidden><path d={d} /></svg>{label}</Link>)}
+          <button role="menuitem" onClick={signOut}><svg viewBox="0 0 24 24" aria-hidden><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>Sign out</button>
         </div>
       )}
     </div>

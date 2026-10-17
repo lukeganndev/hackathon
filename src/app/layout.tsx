@@ -19,11 +19,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const { data: { user } } = await db.auth.getUser();
   let school: School | null = null;
   let name = "";
+  let unread: number | null = 0;
   if (user) {
     const { data: p } = await db.from("profiles")
       .select("display_name, school:schools(id, slug, name, colors, slogan, logo_url)").eq("id", user.id).single();
     school = (p?.school as unknown as School) ?? null;
     name = p?.display_name ?? "";
+    ({ count: unread } = await db.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", user.id).is("read_at", null));
   }
 
   return (
@@ -32,7 +34,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <Intro />
         <header className="hdr">
           <Link href={school ? `/${school.slug}` : "/"} className="logo" aria-label="Loop home"><LoopMark />Loop</Link>
-          {user && school && <Nav slug={school.slug} />}
+          {user && school && <Nav slug={school.slug} unread={unread ?? 0} />}
           <div style={{ flex: 1 }} />
           {user && school
             ? <AccountMenu userId={user.id} name={name} school={school.name} slug={school.slug} />
