@@ -1,6 +1,6 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~12:00 CT_
+_Last updated: 2026-10-17 ~1:15 CT_
 
 ## Goal
 Hackathon (deadline 5pm, aim done 4pm). Prompt: multi-tenant campus marketplace, start with Alabama (UA), .edu verified, per-school customization, cross-campus browsing, innovation weighted most.
@@ -60,16 +60,16 @@ Team: 3 beginners using Codex + Claude.
 - Stripe (Luke): `src/lib/stripeHolds.ts` tested in test mode (hold/capture/release, idempotent). `0004_stripe_cash_legs.sql` installed. Wired in `src/app/api/trades/_lib/server.ts` mutate(): hold on accepted, capture on confirm, release on cancel.
 - Ratings: `0005_ratings.sql` installed (insert only after a code-confirmed handoff, by its two people, once; `rating_summary` view). Profile `/u/[id]`, stars on listings, "Rate your recent trades" on `/listings/mine`. Buy button = 1-leg cash trade.
 - Loop banner on `/[school]` (`LoopBanner.tsx`): tells a signed-in student they're in a loop. `0006_privacy_limits.sql` installed: profiles email hidden from students (column grants; never `select *` on profiles), photo bucket 5MB images only.
+- Verified live: 3-way loop closed with codes; cash sale hold/charge/release; reviews. Login: send/verify buttons disable while busy, 60s resend cooldown (multiple clicks used to email several codes and void older ones).
 - Demo data: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (re-runnable, demo rows tagged `details.demo`/`[demo]` wants). Loop lrgann -> hlpenick -> egbarber -> lrgann.
 - Login works on live site (Gmail SMTP saved, Magic Link + Confirm signup templates send `{{ .Token }}`).
 - Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).
 - Supabase project `mfjizvmectbqgyfqqvoq` (ca-central-1): migration + seed applied, 7 tables + bucket verified. `.env.local` has URL prefilled (gitignored).
 
 ## Next steps
-1. Test on live site with real accounts: photo listing, chat agent, want button.
-2. Swap feed markup for Friend B's `ListingCard` once merged; review Friend B/C PRs.
-3. Live dry run of the 3-way demo loop with all 3 laptops; then a cash sale to check Stripe.
-4. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
+1. Merge + check Friend B/C design baseline when pushed (build, then click through feed, listing, chat, trades).
+2. Rehearse pitch (`docs/pitch.md`), record backup video. Reset demo first: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber`.
+3. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas
 - On Windows, clone with `git -c core.longpaths=true clone ...` if the path is long.
