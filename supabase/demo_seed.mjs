@@ -14,8 +14,15 @@ const people = must(await db.from("profiles").select("id, school_id, display_nam
 const P = Object.fromEntries(people.map((p) => [p.display_name, p]));
 for (const n of [a, b, c]) if (!P[n]) throw new Error(`No user "${n}". They need to sign in once first.`);
 
-// Clean up the previous run. Wants cascade when their listing is deleted; also drop demo fuzzy wants.
-must(await db.from("listings").delete().eq("details->>demo", "true"));
+// Clean up the previous run, but keep completed trades (and their listings/reviews) as real history.
+// Unfinished trades on demo listings are deleted (legs and codes cascade) so the listings can go.
+const demoIds = must(await db.from("listings").select("id").eq("details->>demo", "true")).map((l) => l.id);
+if (demoIds.length) {
+  const open = must(await db.from("trade_legs").select("trade_id, trade:trades(status)").in("listing_id", demoIds))
+    .filter((l) => l.trade.status !== "done").map((l) => l.trade_id);
+  if (open.length) must(await db.from("trades").delete().in("id", [...new Set(open)]));
+}
+must(await db.from("listings").delete().eq("details->>demo", "true").not("status", "in", "(sold,traded)"));
 must(await db.from("wants").delete().like("text", "[demo]%"));
 
 const listing = (who, row) => ({ owner_id: P[who].id, school_id: P[who].school_id, kind: "item", ...row, details: { ...row.details, demo: true } });
