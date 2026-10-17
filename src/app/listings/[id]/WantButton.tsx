@@ -23,11 +23,11 @@ export function WantButton({ listingId, title, wanted }: { listingId: string; ti
 
   return (
     <>
-      <button onClick={toggle} className={`rounded p-3 ${on ? "border" : "bg-[var(--school)] text-white"}`}>
+      <button onClick={toggle} className="btn-ghost" style={on ? undefined : { borderColor: "var(--accent)", color: "var(--accent)" }}>
         {on ? "✓ On your wants list (tap to remove)" : "I want this"}
       </button>
       {on && <p className="text-sm opacity-70">We&apos;ll look for a trade loop that gets it to you.</p>}
-      {error && <p role="alert" className="text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-[#b3261e]">{error}</p>}
     </>
   );
 }

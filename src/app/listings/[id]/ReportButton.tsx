@@ -20,11 +20,11 @@ export function ReportButton({ listingId }: { listingId: string }) {
   if (done) return <p className="text-sm opacity-70" role="status">{done}</p>;
   return (
     <div className="text-sm">
-      <button onClick={() => setOpen(!open)} aria-expanded={open} className="underline opacity-70">⚑ Report this listing</button>
+      <button onClick={() => setOpen(!open)} aria-expanded={open} className="underline opacity-70" style={{ background: "none", border: 0, padding: 0 }}>⚑ Report this listing</button>
       {open && (
         <div className="flex flex-wrap gap-2 mt-2">
           {Object.entries(REASONS).map(([k, label]) => (
-            <button key={k} onClick={() => report(k)} className="rounded border px-3 py-1">{label}</button>
+            <button key={k} onClick={() => report(k)} className="btn-ghost" style={{ padding: "6px 12px" }}>{label}</button>
           ))}
         </div>
       )}

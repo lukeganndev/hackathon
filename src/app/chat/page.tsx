@@ -69,12 +69,12 @@ export default function Chat() {
 
   return (
     <main className="flex flex-col gap-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold">Tell Loop what you have and what you want</h1>
+      <h1 className="text-3xl">Tell Loop what you have and what you want</h1>
 
       {!messages.length && (
         <div className="flex flex-col gap-2">
           {EXAMPLES.map((e) => (
-            <button key={e} onClick={() => send(e)} className="rounded-xl border p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-900">
+            <button key={e} onClick={() => send(e)} className="panel text-left">
               “{e}”
             </button>
           ))}
@@ -88,7 +88,7 @@ export default function Chat() {
               ? <Link key={i} href={r.href} className="self-start rounded-full border px-3 py-1 text-sm underline">{r.text}</Link>
               : <span key={i} className="self-start rounded-full border px-3 py-1 text-sm">{r.text}</span>
           ) : (
-            <p key={i} className={`max-w-[85%] rounded-2xl px-4 py-2 whitespace-pre-wrap ${r.who === "me" ? "self-end bg-black text-white" : "self-start bg-gray-100 dark:bg-gray-800"}`}>
+            <p key={i} className={`max-w-[85%] rounded-2xl px-4 py-2 whitespace-pre-wrap ${r.who === "me" ? "self-end bg-[var(--accent)] text-[var(--on)]" : "self-start bg-[var(--card)] border border-[var(--line)]"}`}>
               {r.text}
             </p>
           ))}
@@ -98,10 +98,10 @@ export default function Chat() {
       <form onSubmit={(e) => { e.preventDefault(); send(draft); }} className="flex gap-2">
         <label htmlFor="msg" className="sr-only">Message</label>
         <input id="msg" value={draft} onChange={(e) => setDraft(e.target.value)} disabled={busy}
-          placeholder="Trade my calc textbook for…" className="border rounded p-3 flex-1" />
-        <button disabled={busy} className="rounded bg-black text-white px-5">Send</button>
+          placeholder="Trade my calc textbook for…" className="flex-1" />
+        <button disabled={busy} className="btn">Send</button>
       </form>
-      {error && <p role="alert" className="text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-[#b3261e]">{error}</p>}
     </main>
   );
 }

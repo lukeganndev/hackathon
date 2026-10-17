@@ -26,10 +26,10 @@ export default async function Profile({ params }: { params: Promise<{ id: string
   return (
     <main className="grid md:grid-cols-[1fr_2fr] gap-8" style={{ "--school": school.colors.primary } as React.CSSProperties}>
       <section className="flex flex-col gap-2">
-        <div className="w-16 h-16 rounded-full grid place-items-center text-2xl font-bold text-white bg-[var(--school)]" aria-hidden>
+        <div className="w-16 h-16 rounded-full grid place-items-center text-3xl text-white bg-[var(--school)]" aria-hidden>
           {person.display_name?.[0]?.toUpperCase()}
         </div>
-        <h1 className="text-2xl font-bold">{person.display_name}{person.id === user.id && " (you)"}</h1>
+        <h1 className="text-3xl">{person.display_name}{person.id === user.id && " (you)"}</h1>
         <p className="text-sm opacity-70">{school.name} · .edu verified · joined {new Date(person.created_at).toLocaleDateString([], { month: "short", year: "numeric" })}</p>
         <Stars avg={summary?.avg_stars ?? null} count={summary?.review_count ?? 0} />
         <h2 className="text-lg font-semibold mt-4">Offering</h2>
@@ -42,13 +42,13 @@ export default async function Profile({ params }: { params: Promise<{ id: string
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-2xl font-bold">Reviews</h2>
+        <h2 className="text-3xl">Reviews</h2>
         <p className="text-sm opacity-70">Only students who completed a handoff with them (confirmed by code) can leave a review.</p>
         {!reviews?.length && <p>No reviews yet.</p>}
         {reviews?.map((r) => {
           const rater = r.rater as unknown as { id: string; display_name: string };
           return (
-            <article key={r.id} className="rounded-xl border p-3">
+            <article key={r.id} className="panel">
               <p><span className="text-amber-500" aria-label={`${r.stars} stars`}>{"★".repeat(r.stars)}{"☆".repeat(5 - r.stars)}</span></p>
               {r.comment && <p className="mt-1">{r.comment}</p>}
               <p className="text-xs opacity-70 mt-1">

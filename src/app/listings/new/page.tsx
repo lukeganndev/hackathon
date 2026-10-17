@@ -21,7 +21,7 @@ async function shrink(file: File): Promise<Blob> {
   return new Promise((resolve) => canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.85));
 }
 
-const input = "border rounded p-3 w-full";
+const input = "w-full";
 
 export default function NewListing() {
   const supabase = supabaseBrowser();
@@ -95,20 +95,20 @@ export default function NewListing() {
 
   return (
     <main className="flex flex-col gap-4 max-w-xl">
-      <h1 className="text-2xl font-bold">New listing</h1>
+      <h1 className="text-3xl">New listing</h1>
 
       <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Listing type">
         {(["item", "service", "ride"] as Kind[]).map((k) => (
           <button key={k} type="button" role="radio" aria-checked={kind === k}
             onClick={() => { setKind(k); setF({ ...f, category: CATEGORIES[k][0] }); }}
-            className={`rounded p-3 border capitalize ${kind === k ? "bg-black text-white" : ""}`}>
+            className={`${kind === k ? "btn" : "btn-ghost"} capitalize`}>
             {k}
           </button>
         ))}
       </div>
 
       {kind === "item" && (
-        <label className="flex flex-col gap-2 rounded-xl border-2 border-dashed p-4 text-center cursor-pointer">
+        <label className="panel flex flex-col gap-2 text-center cursor-pointer" style={{ borderStyle: "dashed", borderWidth: 2 }}>
           {photoUrl
             ? <img src={photoUrl} alt="Your item" className="mx-auto max-h-60 rounded" />
             : <span>📷 Snap a photo and AI fills in the rest</span>}
@@ -158,9 +158,9 @@ export default function NewListing() {
           <p className="text-sm opacity-70">Tickets transfer through the official account. Price can&apos;t go over face value.</p>
         </>)}
 
-        <button className="rounded bg-black text-white p-3" disabled={!!status}>Post listing</button>
+        <button className="btn" disabled={!!status}>Post listing</button>
       </form>
-      {error && <p role="alert" className="text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-[#b3261e]">{error}</p>}
     </main>
   );
 }

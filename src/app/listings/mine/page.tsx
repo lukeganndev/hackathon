@@ -32,7 +32,7 @@ export default async function MyStuff() {
     <main className="grid md:grid-cols-2 gap-8">
       {!!toRate.length && (
         <section className="md:col-span-2 flex flex-col gap-3">
-          <h2 className="text-2xl font-bold">Rate your recent trades</h2>
+          <h2 className="text-3xl">Rate your recent trades</h2>
           <div className="grid md:grid-cols-2 gap-3">
             {toRate.map((l) => (
               <RateForm key={l.id} legId={l.id} rateeId={l.other} rateeName={nameOf(l.other)}
@@ -42,10 +42,10 @@ export default async function MyStuff() {
         </section>
       )}
       <section className="flex flex-col gap-3">
-        <h1 className="text-2xl font-bold">What you have</h1>
+        <h1 className="text-3xl">What you have</h1>
         {!listings?.length && <p>Nothing posted yet. <Link href="/listings/new" className="underline">Post something</Link>.</p>}
         {listings?.map((l) => (
-          <div key={l.id} className="rounded-xl border p-3 flex items-center justify-between gap-3">
+          <div key={l.id} className="panel flex items-center justify-between gap-3">
             <div>
               <Link href={`/listings/${l.id}`} className="font-medium underline">{l.title}</Link>
               <p className="text-sm opacity-70">{money(l.price_cents)} · {l.status}</p>
@@ -56,12 +56,12 @@ export default async function MyStuff() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-2xl font-bold">What you want</h2>
+        <h2 className="text-3xl">What you want</h2>
         {!wants?.length && <p>No wants yet. <Link href="/chat" className="underline">Tell Loop what you want</Link>.</p>}
         {wants?.map((w) => {
           const matched = (w.listing as unknown as { title: string } | null)?.title;
           return (
-            <div key={w.id} className="rounded-xl border p-3 flex items-center justify-between gap-3">
+            <div key={w.id} className="panel flex items-center justify-between gap-3">
               <div>
                 <p className="font-medium">{w.text.replace(/^\[demo\] /, "")}</p>
                 <p className="text-sm opacity-70">

@@ -1,92 +1,105 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
+import { shortName, themeVars, type School } from "@/lib/schoolTheme";
+import { Crest } from "../Crest";
+import { ListingCard } from "../ListingCard";
 import { ImpactCounter } from "./ImpactCounter";
 import { LoopBanner } from "./LoopBanner";
 
-type School = { id: string; slug: string; name: string; colors: { primary: string } };
+type Row = { id: string; title: string; price_cents: number | null; photo_url: string | null; kind: string; category: string | null; school_id: string; owner: { display_name: string } | null };
+const CATS = ["textbooks", "clothing", "tickets", "furniture", "electronics", "dorm", "lab", "tutoring", "rides", "other"];
 
 export default async function SchoolPage({ params, searchParams }: {
   params: Promise<{ school: string }>;
-  searchParams: Promise<{ all?: string }>;
+  searchParams: Promise<{ all?: string; q?: string; cat?: string }>;
 }) {
   const { school: slug } = await params;
-  const all = (await searchParams).all === "1";
+  const { all: allParam, q = "", cat = "" } = await searchParams;
+  const all = allParam === "1";
   const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: schools } = await supabase.from("schools").select("id, slug, name, colors").order("created_at");
-  const school = schools?.find((s: School) => s.slug === slug);
+  const { data: school } = await supabase.from("schools").select("id, slug, name, colors, slogan, logo_url, email_domains").eq("slug", slug).single();
   if (!school) notFound();
-  const others = schools!.filter((s: School) => s.id !== school.id);
-  const byId = Object.fromEntries(schools!.map((s: School) => [s.id, s]));
 
-  let q = supabase.from("listings").select("id, title, price_cents, photo_url, kind, school_id")
-    .eq("status", "active").order("created_at", { ascending: false });
-  if (!all) q = q.eq("school_id", school.id);
-  const { data: listings } = await q;
+  let query = supabase.from("listings").select("id, title, price_cents, photo_url, kind, category, school_id, owner:profiles(display_name)")
+    .eq("status", "active").order("created_at", { ascending: false }).limit(60);
+  if (!all) query = query.eq("school_id", school.id);
+  if (q) query = query.ilike("title", `%${q.replace(/[%_]/g, "")}%`);
+  if (cat) query = query.eq("category", cat);
+  const { data } = await query;
+  const listings = (data ?? []) as unknown as Row[];
 
-  // Rivalry banner: how many listings each other campus has right now.
-  const counts = await Promise.all(others.map(async (s: School) => {
-    const { count } = await supabase.from("listings").select("id", { count: "exact", head: true })
-      .eq("school_id", s.id).eq("status", "active");
-    return { ...s, count: count ?? 0 };
-  }));
-
-  const tab = (on: boolean) => `px-4 py-2 rounded-full font-semibold ${on ? "bg-[var(--school)] text-white" : "border"}`;
+  // Schools shown on cards (only the ones we need), recent activity for the ticker,
+  // and a "just joined" banner for schools added in the last 30 minutes (the live demo).
+  const ids = [...new Set([school.id, ...listings.map((l) => l.school_id)])];
+  const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+  const [{ data: cardSchools }, { data: recent }, { data: newSchools }, { count: campuses }] = await Promise.all([
+    supabase.from("schools").select("id, name, colors, email_domains").in("id", ids),
+    supabase.from("listings").select("title, status, school:schools(name)").order("created_at", { ascending: false }).limit(12),
+    supabase.from("schools").select("id, slug, name, colors, slogan, logo_url").neq("id", school.id).gte("created_at", since),
+    supabase.from("schools").select("id", { count: "exact", head: true }),
+  ]);
+  const byId = Object.fromEntries((cardSchools ?? []).map((s) => [s.id, s]));
+  const short = shortName(school.name);
+  const tab = (href: string, on: boolean, label: string) => <Link href={href} aria-current={on ? "page" : undefined}>{label}</Link>;
 
   return (
-    <main className="flex flex-col gap-4" style={{ "--school": school.colors.primary } as React.CSSProperties}>
-      {counts.map((s) => (
-        <Link key={s.id} href={`/${slug}?all=1`} className="rounded-xl p-4 text-white flex flex-wrap items-center justify-between gap-2"
-          style={{ background: `linear-gradient(90deg, ${school.colors.primary}, ${s.colors.primary})` }}>
-          <span className="font-bold">🏈 Rivalry mode: {s.name} is on Loop</span>
-          <span>{s.count ? `${s.count} listing${s.count === 1 ? "" : "s"} you can trade for →` : "Just joined. Be the first to trade across campuses →"}</span>
+    <div className="flex flex-col gap-6" style={themeVars(school as School)}>
+      {(newSchools as School[] | null)?.map((s) => (
+        <Link key={s.id} href={`/${slug}?all=1`} className="panel flex items-center gap-4" style={{ borderColor: s.colors.primary }}>
+          <Crest school={s} className="crest" />
+          <span><b className="serif" style={{ fontSize: 22 }}>{s.name} just joined Loop. {s.slogan}!</b><br />
+            <span className="mute">Cross-campus trading is live. Be the first to trade with {shortName(s.name)} →</span></span>
         </Link>
       ))}
 
-      <h1 className="text-3xl font-bold text-[var(--school)]">{school.name}</h1>
-      {user && <LoopBanner userId={user.id} />}
-      <ImpactCounter schoolId={school.id} schoolName={school.name} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <nav className="flex gap-2" aria-label="Which campuses">
-          <Link href={`/${slug}`} className={tab(!all)} aria-current={!all ? "page" : undefined}>{school.name.replace(/^The /, "")}</Link>
-          <Link href={`/${slug}?all=1`} className={tab(all)} aria-current={all ? "page" : undefined}>All campuses</Link>
-        </nav>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/listings/new" className="rounded bg-[var(--school)] text-white px-5 py-3 font-semibold">
-            + Sell or trade something
-          </Link>
-          <Link href="/chat" className="rounded border border-[var(--school)] px-5 py-3 font-semibold">
-            💬 Tell Loop what you want
-          </Link>
+      <section className="band">
+        <Crest school={school as School} />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <small>{school.name} · verified {school.email_domains?.[0]}</small>
+          <h1>{all ? "Every campus, one loop." : `${school.slogan ?? short}.`}</h1>
+          <p>{all
+            ? `Browsing ${campuses ?? 1} verified campuses. Trade across schools in loops, not pairs.`
+            : `The ${short} student marketplace. Buy, sell and trade in loops with classmates. Only verified ${school.email_domains?.[0]} students.`}</p>
         </div>
-      </div>
+      </section>
 
-      {!listings?.length && <p>No listings yet (sign in to see your campus).</p>}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {listings?.map((l) => {
-          const from = byId[l.school_id];
-          return (
-            <Link key={l.id} href={`/listings/${l.id}`} className="rounded-xl border overflow-hidden">
-              {l.photo_url
-                ? <img src={l.photo_url} alt="" className="aspect-square w-full object-cover" />
-                : <div className="aspect-square grid place-items-center text-3xl bg-gray-100 dark:bg-gray-800">
-                    {l.kind === "ride" ? "🚗" : l.kind === "service" ? "🛠" : "📦"}
-                  </div>}
-              <div className="p-2">
-                <p className="font-medium line-clamp-2">{l.title}</p>
-                <p className="text-sm">{l.price_cents == null ? "Trade only" : `$${(l.price_cents / 100).toFixed(2)}`}</p>
-                {all && (
-                  <p className="text-xs mt-1 flex items-center gap-1">
-                    <span className="inline-block w-2 h-2 rounded-full" style={{ background: from.colors.primary }} aria-hidden />
-                    {from.name.replace(/^The /, "")}
-                  </p>
-                )}
-              </div>
-            </Link>
-          );
-        })}
+      {!!recent?.length && (
+        <div className="tick" aria-hidden>
+          <div>{[...recent, ...recent].map((r, i) => (
+            <span key={i}><b>{r.status === "active" ? "New" : r.status === "sold" ? "Sold" : "Traded"}</b>{r.title} · {(r.school as unknown as { name: string })?.name}</span>
+          ))}</div>
+        </div>
+      )}
+
+      {user && <LoopBanner userId={user.id} />}
+      <ImpactCounter schoolId={school.id} campuses={campuses ?? 1} />
+
+      <form className="flex flex-wrap gap-3 items-center" action={`/${slug}`}>
+        <nav className="seg" aria-label="Which campuses">
+          {tab(`/${slug}`, !all, "My campus")}
+          {tab(`/${slug}?all=1`, all, "All campuses")}
+        </nav>
+        {all && <input type="hidden" name="all" value="1" />}
+        <label className="sr-only" htmlFor="q">Search listings</label>
+        <input id="q" name="q" defaultValue={q} placeholder="Search listings" style={{ flex: 1, minWidth: 160 }} />
+        <label className="sr-only" htmlFor="cat">Category</label>
+        <select id="cat" name="cat" defaultValue={cat}>
+          <option value="">All categories</option>
+          {CATS.map((c) => <option key={c} value={c}>{c[0].toUpperCase() + c.slice(1)}</option>)}
+        </select>
+        <button className="btn-ghost">Search</button>
+        <Link href="/listings/new" className="btn">+ Sell or trade</Link>
+      </form>
+
+      {!listings.length && <p className="mute" style={{ padding: "40px 0" }}>{user ? "Nothing here yet. Be the first to list something." : "Sign in to see your campus."}</p>}
+      <div className="lgrid">
+        {listings.map((l, i) => (
+          <ListingCard key={l.id} l={l} school={byId[l.school_id] ?? school} seller={l.owner?.display_name}
+            delay={i * 40} mine={all && l.school_id === school.id} />
+        ))}
       </div>
-    </main>
+    </div>
   );
 }

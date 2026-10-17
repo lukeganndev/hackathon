@@ -22,7 +22,7 @@ export async function LoopBanner({ userId }: { userId: string }) {
   const get = loop.find((l) => l.to === userId)!;
 
   return (
-    <Link href="/trades" className="rounded-xl border-2 border-[var(--school)] p-4 flex flex-wrap items-center justify-between gap-2">
+    <Link href="/trades" className="panel flex flex-wrap items-center justify-between gap-2" style={{ borderColor: "var(--accent)", borderWidth: 2 }}>
       <span>
         <span className="font-bold">🔁 You&apos;re in a {loop.length}-person loop!</span>{" "}
         Give your <b>{title(give.listingId)}</b>, get <b>{title(get.listingId)}</b>.

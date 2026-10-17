@@ -20,10 +20,10 @@ export function RemoveButton({ table, id }: { table: "listings" | "wants"; id: s
 
   return (
     <div className="text-right">
-      <button onClick={remove} disabled={busy} className="rounded border px-3 py-1 text-sm">
+      <button onClick={remove} disabled={busy} className="btn-ghost" style={{ padding: "6px 12px", fontSize: 13 }}>
         {busy ? "Removing…" : "Remove"}
       </button>
-      {error && <p role="alert" className="text-xs text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-xs text-[#b3261e]">{error}</p>}
     </div>
   );
 }

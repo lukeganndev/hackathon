@@ -1,14 +1,11 @@
 .shell {
-  --ink:#20241f;
-  --muted:#6e7269;
-  --line:#dedfd6;
-  --paper:#f7f7f0;
-  --crimson:#9e1b32;
-  background:var(--paper);
+  --muted:var(--mute);
+  --paper:var(--card);
+  --crimson:var(--accent);
+  background:transparent;
   color:var(--ink);
-  padding:0 32px;
-  border-radius:24px;
-  font-family:Arial,Helvetica,sans-serif;
+  padding:0;
+  font-family:inherit;
   min-height:80vh;
   overflow-wrap:anywhere
 }

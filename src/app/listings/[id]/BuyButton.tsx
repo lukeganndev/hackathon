@@ -24,11 +24,11 @@ export function BuyButton({ listingId, sellerId, buyerId, priceCents }: { listin
 
   return (
     <>
-      <button onClick={buy} disabled={busy} className="rounded p-3 border-2 border-[var(--school)] font-semibold">
+      <button onClick={buy} disabled={busy} className="btn">
         {busy ? "Holding payment…" : `Buy for $${(priceCents / 100).toFixed(2)}`}
       </button>
       <p className="text-sm opacity-70">Your card is held, not charged, until you get the item and give the seller your code.</p>
-      {error && <p role="alert" className="text-red-600">{error}</p>}
+      {error && <p role="alert" className="text-[#b3261e]">{error}</p>}
     </>
   );
 }
