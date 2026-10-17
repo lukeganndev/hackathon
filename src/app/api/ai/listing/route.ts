@@ -36,6 +36,11 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Send the bytes, not the URL: doesn't depend on Anthropic being able to reach our storage.
+    const img = await fetch(photoUrl);
+    if (!img.ok) throw new Error(`photo fetch ${img.status}`);
+    const data = Buffer.from(await img.arrayBuffer()).toString("base64");
+
     const response = await client.beta.messages.create({
       model: "claude-opus-5-5",
       max_tokens: 2000,
@@ -46,7 +51,7 @@ export async function POST(req: Request) {
       messages: [{
         role: "user",
         content: [
-          { type: "image", source: { type: "url", url: photoUrl } },
+          { type: "image", source: { type: "base64", media_type: "image/jpeg", data } },
           { type: "text", text: "Draft the listing for this item." },
         ],
       }],
