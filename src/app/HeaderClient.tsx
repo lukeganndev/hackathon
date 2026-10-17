@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { LoopMark } from "./Crest";
 import { clearLoopChat } from "./chat/ChatParts";
@@ -46,13 +46,46 @@ export function MobileNav({ slug }: { slug: string }) {
   );
 }
 
-export function SignOut() {
+export function useSignOut() {
   const router = useRouter();
+  return async () => { clearLoopChat(); await supabaseBrowser().auth.signOut(); router.push("/login"); router.refresh(); };
+}
+
+// The "school · name" chip in the header opens the account menu.
+export function AccountMenu({ userId, name, school, slug }: { userId: string; name: string; school: string; slug: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const path = usePathname();
+  const signOut = useSignOut();
+  useEffect(() => setOpen(false), [path]);
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", away); document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  const items: [string, string, string][] = [
+    [`/u/${userId}`, "👤", "View my profile"], ["/listings/mine", "📦", "My listings & wants"], ["/trades", "↻", "My loops"],
+    ["/listings/new", "＋", "Post something"], ["/chat", "💬", "Ask Loop chats"], [`/${slug}?all=1`, "🌐", "Browse all campuses"],
+    ["/settings", "⚙️", "Settings"],
+  ];
   return (
-    <button className="mute" style={{ background: "none", border: 0, padding: "0 0 0 6px" }}
-      onClick={async () => { clearLoopChat(); await supabaseBrowser().auth.signOut(); router.push("/login"); router.refresh(); }}>
-      Sign out
-    </button>
+    <div className="acct" ref={ref}>
+      <button className="chip who" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        <i className="dot" /><span className="who-text">{school} · </span>{name}<span aria-hidden className={open ? "caret-up" : ""}>▾</span>
+      </button>
+      {open && (
+        <div className="acct-menu" role="menu">
+          <div className="acct-head">
+            <span className="acct-av" aria-hidden>{name[0]?.toUpperCase()}</span>
+            <div><b>{name}</b><small>{school} · .edu verified</small></div>
+          </div>
+          {items.map(([href, ic, label]) => <Link key={href} href={href} role="menuitem"><span aria-hidden>{ic}</span>{label}</Link>)}
+          <button role="menuitem" onClick={signOut}><span aria-hidden>⎋</span>Sign out</button>
+        </div>
+      )}
+    </div>
   );
 }
 

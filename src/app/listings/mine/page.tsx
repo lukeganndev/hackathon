@@ -2,8 +2,10 @@ import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { RemoveButton } from "./RemoveButton";
 import { RateForm } from "./RateForm";
+import { ListingCard, IC, icon, type CardListing, type CardSchool } from "../../ListingCard";
 
-const money = (c: number | null) => (c == null ? "Trade only" : `$${(c / 100).toFixed(2)}`);
+const CARD = "id, title, price_cents, photo_url, category, status, school:schools(name, colors, email_domains)";
+type Card = CardListing & { school: CardSchool };
 
 export default async function MyStuff() {
   const supabase = await supabaseServer();
@@ -11,14 +13,16 @@ export default async function MyStuff() {
   if (!user) return <main><Link href="/login" className="underline">Sign in</Link> to see your stuff.</main>;
 
   const [{ data: listings }, { data: wants }, { data: done }, { data: rated }] = await Promise.all([
-    supabase.from("listings").select("id, title, price_cents, status, kind")
+    supabase.from("listings").select(CARD)
       .eq("owner_id", user.id).neq("status", "removed").order("created_at", { ascending: false }),
-    supabase.from("wants").select("id, text, listing_id, listing:listings(title)")
+    supabase.from("wants").select(`id, text, listing_id, listing:listings(${CARD})`)
       .eq("user_id", user.id).eq("active", true).order("created_at", { ascending: false }),
     supabase.from("trade_legs").select("id, giver_id, receiver_id, listing:listings(title)")
       .not("confirmed_at", "is", null).or(`giver_id.eq.${user.id},receiver_id.eq.${user.id}`),
     supabase.from("ratings").select("trade_leg_id").eq("rater_id", user.id),
   ]);
+  const { data: me } = await supabase.from("profiles").select("school:schools(name, colors, email_domains)").eq("id", user.id).single();
+  const mySchool = me?.school as unknown as CardSchool;
   // Confirmed handoffs I haven't reviewed yet.
   const ratedIds = new Set(rated?.map((r) => r.trade_leg_id));
   const toRate = (done ?? []).filter((l) => !ratedIds.has(l.id))
@@ -29,9 +33,9 @@ export default async function MyStuff() {
   const nameOf = (id: string) => names?.find((n) => n.id === id)?.display_name ?? "them";
 
   return (
-    <main className="grid md:grid-cols-2 gap-8">
+    <main className="flex flex-col gap-10">
       {!!toRate.length && (
-        <section className="md:col-span-2 flex flex-col gap-3">
+        <section className="flex flex-col gap-3">
           <h2 className="text-3xl">Rate your recent trades</h2>
           <div className="grid md:grid-cols-2 gap-3">
             {toRate.map((l) => (
@@ -42,36 +46,47 @@ export default async function MyStuff() {
         </section>
       )}
       <section className="flex flex-col gap-3">
-        <h1 className="text-3xl">What you have</h1>
-        {!listings?.length && <p>Nothing posted yet. <Link href="/listings/new" className="underline">Post something</Link>.</p>}
-        {listings?.map((l) => (
-          <div key={l.id} className="panel flex items-center justify-between gap-3">
-            <div>
-              <Link href={`/listings/${l.id}`} className="font-medium underline">{l.title}</Link>
-              <p className="text-sm opacity-70">{money(l.price_cents)} · {l.status}</p>
+        <div className="flex items-baseline justify-between gap-3"><h1 className="text-3xl">What you have</h1><Link href="/listings/new" className="btn">+ Post something</Link></div>
+        {!listings?.length && <p>Nothing posted yet.</p>}
+        <div className="lgrid">
+          {(listings as unknown as Card[] | null)?.map((l, i) => (
+            <div key={l.id} className="card-wrap">
+              <ListingCard l={l} school={l.school} delay={i * 40} />
+              <div className="flex items-center justify-between text-sm" style={{ color: "var(--mute)" }}>
+                <span>{l.status === "active" ? "Live" : l.status === "pending" ? "In a trade" : l.status === "sold" ? "Sold" : l.status === "traded" ? "Traded" : l.status}</span>
+                {l.status === "active" && <RemoveButton table="listings" id={l.id} />}
+              </div>
             </div>
-            {l.status === "active" && <RemoveButton table="listings" id={l.id} />}
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-3xl">What you want</h2>
-        {!wants?.length && <p>No wants yet. <Link href="/chat" className="underline">Tell Loop what you want</Link>.</p>}
-        {wants?.map((w) => {
-          const matched = (w.listing as unknown as { title: string } | null)?.title;
-          return (
-            <div key={w.id} className="panel flex items-center justify-between gap-3">
-              <div>
-                <p className="font-medium">{w.text.replace(/^\[demo\] /, "")}</p>
-                <p className="text-sm opacity-70">
-                  {matched ? <>Matched: <Link href={`/listings/${w.listing_id}`} className="underline">{matched}</Link></> : "Waiting for a match"}
-                </p>
+        <div className="flex items-baseline justify-between gap-3"><h2 className="text-3xl">What you want</h2><Link href="/chat" className="btn-ghost">Tell Loop what you want</Link></div>
+        {!wants?.length && <p>No wants yet.</p>}
+        <div className="lgrid">
+          {wants?.map((w, i) => {
+            const matched = w.listing as unknown as Card | null;
+            const text = w.text.replace(/^\[demo\] /, "");
+            return (
+              <div key={w.id} className="card-wrap">
+                {matched ? <ListingCard l={matched} school={matched.school} delay={i * 40} /> : (
+                  <div className="lcard" style={{ animationDelay: `${i * 40}ms` }}>
+                    <div className="tile want-tile">
+                      <svg className="ic" viewBox="0 0 24 24" aria-hidden><path d={IC[icon(text)]} /></svg>
+                      <span className="tag">WANTED{mySchool ? ` · ${(mySchool.email_domains?.[0] ?? "").toUpperCase()}` : ""}</span>
+                    </div>
+                    <div className="cb"><h3>{text}</h3><div className="crow"><span>Loop is watching for this</span></div></div>
+                  </div>
+                )}
+                <div className="flex items-center justify-between text-sm" style={{ color: "var(--mute)" }}>
+                  <span>{matched ? `✓ Matched: you want “${text}”` : "Waiting for a match"}</span>
+                  <RemoveButton table="wants" id={w.id} />
+                </div>
               </div>
-              <RemoveButton table="wants" id={w.id} />
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </section>
     </main>
   );

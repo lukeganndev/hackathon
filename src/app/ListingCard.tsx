@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ink } from "@/lib/schoolTheme";
 
 // Listing card from the design: photo, or a striped tile in school colors with an icon.
-const IC: Record<string, string> = {
+export const IC: Record<string, string> = {
   book: "M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 21V5M8 7h7",
   bike: "M5 18a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM19 18a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM5 14.5l4-7h6l4 7M9 7.5l3 7M7.5 6h3",
   chip: "M5 6h14v10H5zM2 19h20M9 9h6v4H9z",

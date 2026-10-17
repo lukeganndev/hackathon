@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 // Rate the other person in a confirmed handoff. The database rejects anything else.
-export function RateForm({ legId, rateeId, rateeName, title }: { legId: string; rateeId: string; rateeName: string; title: string }) {
+export function RateForm({ legId, rateeId, rateeName, title, onDone }: { legId: string; rateeId: string; rateeName: string; title: string; onDone?: () => void }) {
   const router = useRouter();
   const [stars, setStars] = useState(0);
   const [comment, setComment] = useState("");
@@ -18,7 +18,7 @@ export function RateForm({ legId, rateeId, rateeName, title }: { legId: string; 
       trade_leg_id: legId, rater_id: user!.id, ratee_id: rateeId, stars, comment: comment.trim() || null,
     });
     if (error) return setError(error.message);
-    router.refresh();
+    if (onDone) onDone(); else router.refresh();
   }
 
   return (

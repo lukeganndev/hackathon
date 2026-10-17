@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { displayDate, localDateInput, orderLegs, type TradeDetail, type Leg } from "./types";
 import { StatusBadge } from "./StatusBadge";
+import { ReviewPopup } from "./ReviewPopup";
 import styles from "../trades.module.css";
 
 export type TradeAction = (action: "accept" | "meetup" | "confirm" | "cancel", body?: unknown, legId?: string) => Promise<boolean>;
@@ -66,7 +67,7 @@ export function TradeDetailView({ detail, onAction, busy, error }: { detail: Tra
           {given.map((leg) => leg.confirmed_at ? <p key={leg.id} className={styles.notice}>✓ You confirmed your handoff to {name(leg.receiver_id)}.</p> : <ConfirmForm key={leg.id} leg={leg} title={title(leg.listing_id)} receiver={name(leg.receiver_id)} onAction={onAction} busy={busy} />)}
         </>}
 
-        {trade.status === "done" && <Confetti />}{trade.status === "done" && <div className={styles.celebration}><span aria-hidden="true">↻</span><h2 id="next-heading">Loop closed!</h2><p>{detail.profiles.length} people traded. Everyone’s handoff is confirmed.</p><Link href="/trades" className={styles.primary}>Find your next loop <span aria-hidden="true">↗</span></Link></div>}
+        {trade.status === "done" && <><Confetti /><ReviewPopup userId={userId} legs={[...given, ...received].map((leg) => { const other = leg.giver_id === userId ? leg.receiver_id : leg.giver_id; return { legId: leg.id, rateeId: other, rateeName: name(other), title: title(leg.listing_id) }; })} /></>}{trade.status === "done" && <div className={styles.celebration}><span aria-hidden="true">↻</span><h2 id="next-heading">Loop closed!</h2><p>{detail.profiles.length} people traded. Everyone’s handoff is confirmed.</p><Link href="/trades" className={styles.primary}>Find your next loop <span aria-hidden="true">↗</span></Link></div>}
         {trade.status === "cancelled" && <><h2 id="next-heading">This trade was cancelled.</h2><p className={styles.panelDescription}>Reserved items have been released. You can look for a fresh match in your trades.</p><Link href="/trades" className={styles.primary}>Explore other loops <span aria-hidden="true">↗</span></Link></>}
       </aside>
     </div>

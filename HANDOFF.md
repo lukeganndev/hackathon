@@ -8,7 +8,7 @@ Campus marketplace (UA first, 74 schools seeded) where an AI finds **multi-way t
 ## State: everything built and verified locally
 - **Live site is STALE**: https://hackathon-cszx.vercel.app is stuck at the ~2pm build. Luke's Vercel hit the free limit (100 deploys/24h). Plan: a friend deploys from their own Vercel account (`docs/vercel-deploy.md`). Then push in batches only.
 - **Latest version runs locally**: `npm run dev` → http://localhost:3000 (Claude preview config "loop-dev" in `.claude/launch.json`). Don't run `next build` while dev is running (breaks `.next`); use `npx tsc --noEmit` + `npx eslint src`.
-- **Database is shared and live** (Supabase `mfjizvmectbqgyfqqvoq`), migrations 0001–0008 all installed.
+- **Database is shared and live** (Supabase `mfjizvmectbqgyfqqvoq`), migrations 0001–0009 all installed.
 
 ## Features (where to look)
 - Sign-in gate with live school preview + welcome splash: `src/app/login/LoginGate.tsx`. Signup trigger matches email domain incl. subdomains.
@@ -16,7 +16,9 @@ Campus marketplace (UA first, 74 schools seeded) where an AI finds **multi-way t
 - Ask Loop full screen `/chat` (`src/app/chat/page.tsx`) + shared logic `src/app/chat/ChatParts.tsx` (saved chats in localStorage `loop-chats`, typing effect, listing/loop cards). Agent `src/app/api/ai/chat/route.ts`, tools: search_listings, my_listings{show}, create_listing, update_listing, add_want, find_loops, propose_loop (auto-starts found loops). History must stay append-only (Opus 5.5 rejects edited history).
 - Photo → AI listing (types into form): `src/app/listings/new/page.tsx`, `/api/ai/listing`. Posts go through `POST /api/listings` (AI moderation `src/lib/moderate.ts`) + DB blocklist (0008).
 - Trades (Friend C, restyled by Luke): `/trades`, `/trades/[id]`, RPC `loop_trade_action` (0002/0004), Stripe holds `src/lib/stripeHolds.ts`, confetti on close.
-- Also: wants that wait (`src/lib/matchWants.ts`), ratings after confirmed handoff (0005, `/u/[id]`), reports (0003), My stuff `/listings/mine`, Buy button, mobile tab bar.
+- Reviews: popup after a trade closes (`trades/_components/ReviewPopup.tsx`, reuses `listings/mine/RateForm.tsx`). Profile `/u/[id]`: listing cards, completed trades with their reviews (legs read via admin client), clickable stars open all reviews (`u/Reviews.tsx`). My stuff `/listings/mine`: have/want as cards. Popups are native `<dialog className="modal">`.
+- Header chip = account menu (`AccountMenu` in `src/app/HeaderClient.tsx`): profile, My stuff, loops, post, chats, all campuses, `/settings` (display name, filtered by 0009; clear chats; sign out).
+- Also: wants that wait (`src/lib/matchWants.ts`), ratings (0005), reports (0003), Buy button, mobile tab bar.
 - Branding: logo.dev icons for all 75 schools in bucket `logos/icon-<slug>.png` (`schools.logo_url`), shown near-square. **No banner photos** (Luke said no). Design tokens in `src/app/globals.css`.
 
 ## Demo
