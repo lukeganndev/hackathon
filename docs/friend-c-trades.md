@@ -112,8 +112,10 @@ Test mode only. Money is held, not charged, until the handoff code is confirmed.
 - [ ] On confirm: `stripe.paymentIntents.capture(id)`. On cancel: `stripe.paymentIntents.cancel(id)`.
 - [ ] Check it in the Stripe dashboard (test mode -> Payments): "Uncaptured" after accept, "Succeeded" after confirm.
 
-### 5. Demo data (3:30-4:00pm, with Luke)
-- [ ] A script or SQL that creates 3 test users' listings and wants forming a 3-way loop (textbook -> shoes -> ticket), so the live demo always has a loop to find.
+### 5. Demo data (already done by Luke)
+- `supabase/demo_seed.mjs` creates a guaranteed 3-way loop between the team's real accounts: lrgann gives the Norton Anthology to hlpenick, hlpenick gives the Nike shoes to egbarber, egbarber gives the Iron Bowl ticket to lrgann. Plus filler listings.
+- Run it any time to reset the demo: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber`. It deletes and recreates only demo rows.
+- Use it to test the matcher: `findLoops` for lrgann must return that 3-leg loop.
 
 ## Done means
 - `node src/lib/matcher.test.mjs` prints ok.

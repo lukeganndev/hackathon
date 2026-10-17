@@ -31,7 +31,7 @@ export default function NewListing() {
   const [f, setF] = useState({
     title: "", description: "", category: "other", price: "", tradeOnly: false,
     ticket_type: "", face_value: "",
-    from: "", to: "", depart_at: "", seats: "3", unit: "hour", course: "",
+    from: "", to: "", depart_at: "", seats: "3", pickup: "", unit: "hour", course: "",
   });
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -72,7 +72,7 @@ export default function NewListing() {
     if (!profile) return router.push("/login");
     const cents = (v: string) => (v ? Math.round(parseFloat(v) * 100) : null);
     const details =
-      kind === "ride" ? { from: f.from, to: f.to, depart_at: f.depart_at, seats: Number(f.seats) }
+      kind === "ride" ? { from: f.from, to: f.to, depart_at: f.depart_at, seats: Number(f.seats), ...(f.pickup && { pickup: f.pickup }) }
       : kind === "service" ? { unit: f.unit, ...(f.category === "tutoring" && { course: f.course }) }
       : {};
     const { data, error } = await supabase.from("listings").insert({
@@ -127,6 +127,7 @@ export default function NewListing() {
           <label>To<input required value={f.to} onChange={set("to")} className={input} placeholder="Atlanta" /></label>
           <label>Leaving<input required type="datetime-local" value={f.depart_at} onChange={set("depart_at")} className={input} /></label>
           <label>Seats<input required type="number" min={1} max={7} value={f.seats} onChange={set("seats")} className={input} /></label>
+          <label>Pickup spot (optional)<input value={f.pickup} onChange={set("pickup")} className={input} placeholder="Ferguson Center lot" /></label>
         </>)}
         {kind === "service" && (<>
           <label>Priced per

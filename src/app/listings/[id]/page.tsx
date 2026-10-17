@@ -27,7 +27,10 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
       {l.photo_url && <img src={l.photo_url} alt={l.title} className="w-full rounded-xl object-cover max-h-80" />}
       <h1 className="text-2xl font-bold">{l.title}</h1>
       <p className="text-xl font-semibold text-[var(--school)]">{price}{l.price_cents != null && per}</p>
-      {l.kind === "ride" && <p>🚗 {d.from} → {d.to}, {new Date(d.depart_at).toLocaleString()}, {d.seats} seats</p>}
+      {l.kind === "ride" && d.from && (
+        <p>🚗 {d.from} → {d.to}{d.depart_at && `, ${new Date(d.depart_at).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`}{d.seats && `, ${d.seats} seats`}</p>
+      )}
+      {l.kind === "ride" && d.pickup && <p>📍 Pickup: {d.pickup}</p>}
       {l.kind === "service" && d.course && <p>📚 {d.course}</p>}
       {l.description && <p>{l.description}</p>}
       <p className="text-sm opacity-70">Posted by {l.owner.display_name} · {l.category?.replace("_", " ")}</p>
