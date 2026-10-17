@@ -14,9 +14,14 @@ export default async function SchoolPage({ params }: { params: Promise<{ school:
   return (
     <main className="flex flex-col gap-3" style={{ "--school": school.colors.primary } as React.CSSProperties}>
       <h1 className="text-2xl font-bold text-[var(--school)]">{school.name}</h1>
-      <Link href="/listings/new" className="rounded bg-[var(--school)] text-white p-3 text-center font-semibold">
-        + Sell or trade something
-      </Link>
+      <div className="flex flex-wrap gap-3">
+        <Link href="/listings/new" className="rounded bg-[var(--school)] text-white px-5 py-3 font-semibold">
+          + Sell or trade something
+        </Link>
+        <Link href="/chat" className="rounded border border-[var(--school)] px-5 py-3 font-semibold">
+          💬 Tell Loop what you want
+        </Link>
+      </div>
       {!listings?.length && <p>No listings yet (sign in to see your campus).</p>}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {listings?.map((l) => (

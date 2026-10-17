@@ -1,6 +1,6 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~12:15_
+_Last updated: 2026-10-17 ~12:45_
 
 ## Goal
 Hackathon (deadline 5pm, aim done 4pm). Prompt: multi-tenant campus marketplace, start with Alabama (UA), .edu verified, per-school customization, cross-campus browsing, innovation weighted most.
@@ -51,15 +51,16 @@ Team: 3 beginners using Codex + Claude.
   - Storage bucket `listing-photos`, upload path `<uid>/file`.
 - `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
 - Luke's part (12:15): `/listings/new` (item/service/ride form; photo shrunk to 1280px, uploaded to storage, `/api/ai/listing` drafts title/desc/category/price/ticket_type via claude-opus-5-5, effort low, base64 image, ~5s, fallbacks "default"). `/listings/[id]` + `WantButton` (inserts `wants` with `listing_id` = matcher edge). `/[school]` feed grid links to listings.
+- `/chat` + `/api/ai/chat`: agent with tools search_listings, my_listings, create_listing, add_want (run as user, RLS). Client holds raw message history incl. thinking blocks and sends it back unchanged (Opus 5.5 rejects edited history). Tested 2 turns with fake tools.
+- Login works on live site (Gmail SMTP saved, Magic Link + Confirm signup templates send `{{ .Token }}`).
 - Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).
 - Supabase project `mfjizvmectbqgyfqqvoq` (ca-central-1): migration + seed applied 11:15, 7 tables + bucket verified. `.env.local` has URL prefilled (gitignored).
 
 ## Next steps
-1. Gmail SMTP (blocker for login): Luke turns on Google 2-Step Verification, creates an app password, fills Supabase SMTP sender/username/password (host smtp.gmail.com:465 prefilled, unsaved). Then set Magic Link + Confirm signup templates to `{{ .Token }}`.
-2. Then test real login + photo listing on the deployed site.
-3. Luke's next: chat agent (`src/app/chat/`, `/api/ai/chat`) -> writes `wants`, resolves fuzzy wants to `listing_id`.
-4. Swap feed markup for Friend B's `ListingCard` once merged.
-5. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
+1. Test on live site with real accounts: photo listing, chat agent, want button.
+2. Swap feed markup for Friend B's `ListingCard` once merged; review Friend B/C PRs.
+3. Demo data (3:30): 3 accounts + listings/wants forming a 3-way loop (with Friend C).
+4. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas
 - On Windows, clone with `git -c core.longpaths=true clone ...` if the path is long.
