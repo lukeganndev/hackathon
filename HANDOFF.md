@@ -1,6 +1,6 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~10:30_
+_Last updated: 2026-10-17 ~11:00_
 
 ## Goal
 Hackathon (deadline 5pm, aim done 4pm). Prompt: multi-tenant campus marketplace, start with Alabama (UA), .edu verified, per-school customization, cross-campus browsing, innovation weighted most.
@@ -36,9 +36,21 @@ Team: 3 beginners using Codex + Claude.
 2. AI: photo->listing, chat->haves/wants
 3. Matcher, trade state machine, Stripe
 
+## Built (11:00)
+- Next.js 15 + Tailwind at repo root; `npm run build` and lint pass. Setup steps in `README.md`.
+- Schema `supabase/migrations/0001_init.sql` (checked against in-memory Postgres): schools, profiles, listings (haves), wants, trades, trade_legs, trade_leg_codes. RLS on all.
+  - Signup trigger: email domain -> school_id; unknown domain = signup fails (.edu gate).
+  - Ticket policy enforced by DB trigger: transfer_only = no cash, face_value_cap = price <= face.
+  - Trades/legs/codes: clients read only; writes via `supabaseAdmin()` in server routes. Code table readable by receiver only.
+  - `wants.listing_id` = concrete matcher edge; null = fuzzy want for AI to resolve.
+  - Storage bucket `listing-photos`, upload path `<uid>/file`.
+- `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
+- Not yet: Supabase project, `.env.local`, Vercel, git commit of scaffold.
+
 ## Next steps
-1. Write DB schema + scaffold repo, Supabase, Vercel (blocks everyone).
-2. Check Alabama student ticket transfer policy.
+1. Create Supabase project, run migration + seed, set email template `{{ .Token }}`, fill `.env.local`, share keys with team.
+2. Connect Vercel to the GitHub repo, add env vars.
+3. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
 
 ## Gotchas
 - On Windows, clone with `git -c core.longpaths=true clone ...` if the path is long.
