@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { ImpactCounter } from "./ImpactCounter";
+import { LoopBanner } from "./LoopBanner";
 
 type School = { id: string; slug: string; name: string; colors: { primary: string } };
 
@@ -12,6 +13,7 @@ export default async function SchoolPage({ params, searchParams }: {
   const { school: slug } = await params;
   const all = (await searchParams).all === "1";
   const supabase = await supabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
   const { data: schools } = await supabase.from("schools").select("id, slug, name, colors").order("created_at");
   const school = schools?.find((s: School) => s.slug === slug);
   if (!school) notFound();
@@ -43,6 +45,7 @@ export default async function SchoolPage({ params, searchParams }: {
       ))}
 
       <h1 className="text-3xl font-bold text-[var(--school)]">{school.name}</h1>
+      {user && <LoopBanner userId={user.id} />}
       <ImpactCounter schoolId={school.id} schoolName={school.name} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <nav className="flex gap-2" aria-label="Which campuses">
