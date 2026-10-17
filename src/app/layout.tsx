@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Fraunces, Inter_Tight } from "next/font/google";
 import { supabaseServer } from "@/lib/supabase/server";
 import { themeVars, type School } from "@/lib/schoolTheme";
@@ -14,6 +15,7 @@ export const metadata: Metadata = { title: "Loop: the campus marketplace network
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const theme = (await cookies()).get("theme")?.value;
   // Retheme the whole site to the signed-in student's school.
   const db = await supabaseServer();
   const { data: { user } } = await db.auth.getUser();
@@ -29,7 +31,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   }
 
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`} style={themeVars(school)}>
+    <html lang="en" className={`${serif.variable} ${sans.variable}`} style={themeVars(school)} data-theme={theme === "light" || theme === "dark" ? theme : undefined}>
       <body className="antialiased">
         <Intro />
         <header className="hdr">

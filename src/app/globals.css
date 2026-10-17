@@ -7,9 +7,12 @@
   --school: var(--accent);
   --background: var(--bg); --foreground: var(--ink);
 }
+/* Theme: system by default; Settings can force light or dark (data-theme on <html>, from the "theme" cookie). */
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #141311; --card: #1d1b18; --ink: #f1ede3; --mute: #9b968a; --line: #35322c; }
+  :root:not([data-theme="light"]) { --bg: #141311; --card: #1d1b18; --ink: #f1ede3; --mute: #9b968a; --line: #35322c; color-scheme: dark; }
 }
+:root[data-theme="dark"] { --bg: #141311; --card: #1d1b18; --ink: #f1ede3; --mute: #9b968a; --line: #35322c; color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
 
 * { box-sizing: border-box; }
 body {
@@ -73,8 +76,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 .stats { display: flex; gap: 28px; color: var(--mute); font-size: 13px; flex-wrap: wrap; }
 .stats b { display: block; font: 500 24px var(--font-serif), serif; color: var(--ink); }
 .seg { display: flex; background: var(--card); border: 1px solid var(--line); border-radius: 99px; padding: 3px; width: fit-content; }
-.seg a { padding: 6px 14px; border-radius: 99px; color: var(--mute); text-decoration: none; }
-.seg a[aria-current=page] { background: var(--accent); color: var(--on); }
+.seg a, .seg button { padding: 6px 14px; background: none; border: 0; font: inherit; cursor: pointer; border-radius: 99px; color: var(--mute); text-decoration: none; }
+.seg a[aria-current=page], .seg button[aria-pressed=true] { background: var(--accent); color: var(--on); }
 
 /* Listing cards */
 .lgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }

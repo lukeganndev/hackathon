@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { clearLoopChat } from "../chat/ChatParts";
@@ -33,6 +33,7 @@ export function SettingsForm({ userId, name: initial }: { userId: string; name: 
         </div>
         {msg && <p role="status" className="text-sm" style={{ color: msg.startsWith("Saved") ? "#1e8a4c" : "#b3261e" }}>{msg}</p>}
       </form>
+      <ThemePicker />
       <section className="panel flex flex-col gap-2">
         <h2 className="text-xl">Ask Loop history</h2>
         <p className="text-sm" style={{ color: "var(--mute)" }}>Your chats are saved in this browser only.</p>
@@ -40,5 +41,28 @@ export function SettingsForm({ userId, name: initial }: { userId: string; name: 
       </section>
       <button className="btn-ghost" style={{ alignSelf: "flex-start" }} onClick={signOut}>Sign out</button>
     </>
+  );
+}
+
+// Light / dark / system. Saved in a cookie so the server renders the right theme with no flash.
+function ThemePicker() {
+  const [theme, setTheme] = useState("system");
+  useEffect(() => setTheme(document.documentElement.dataset.theme ?? "system"), []);
+  function pick(t: string) {
+    setTheme(t);
+    if (t === "system") delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = t;
+    document.cookie = `theme=${t}; path=/; max-age=31536000; samesite=lax`;
+  }
+  return (
+    <section className="panel flex flex-col gap-2">
+      <h2 className="text-xl">Appearance</h2>
+      <div className="seg" role="group" aria-label="Theme">
+        {[["light", "Light"], ["dark", "Dark"], ["system", "System"]].map(([v, label]) => (
+          <button key={v} type="button" aria-pressed={theme === v} onClick={() => pick(v)}>{label}</button>
+        ))}
+      </div>
+      <p className="text-sm" style={{ color: "var(--mute)" }}>System follows your device setting.</p>
+    </section>
   );
 }
