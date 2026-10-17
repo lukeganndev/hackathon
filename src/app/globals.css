@@ -107,4 +107,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition: none !important; }
 }
+/* Official logos: a consistent white plate that fits square seals and wide wordmarks alike. */
+.crest.logo { width: 150px; height: 112px; object-fit: contain; background: #fff; border-radius: 16px; padding: 12px;
+  box-shadow: 0 6px 18px -6px rgba(0,0,0,.35); }
 .gate .crest { width: 56px; height: 66px; }
+.gate .crest.logo, .panel .crest.logo { width: 96px; height: 66px; padding: 8px; border: 1px solid var(--line); box-shadow: none; }
+.wel .crest.logo { width: 220px; height: 164px; padding: 18px; }

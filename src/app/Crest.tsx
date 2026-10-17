@@ -5,8 +5,7 @@ import { ink, initials, type School } from "@/lib/schoolTheme";
 export function Crest({ school, className = "crest" }: { school: Pick<School, "name" | "slug" | "colors" | "logo_url">; className?: string }) {
   if (school.logo_url) {
     // Official logo on a white plate so dark logos stay readable on school-color bands.
-    return <img className={className} src={school.logo_url} alt={`${school.name} logo`}
-      style={{ objectFit: "contain", background: "#fff", borderRadius: 14, padding: 8, boxShadow: "0 4px 14px rgba(0,0,0,.25)" }} />;
+    return <img className={`${className} logo`} src={school.logo_url} alt={`${school.name} logo`} />;
   }
   const a = initials(school), c = school.colors.primary, c2 = school.colors.secondary ?? "#828A8F", k = ink(c);
   return (

@@ -30,13 +30,11 @@ export default async function SchoolPage({ params, searchParams }: {
   const { data } = await query;
   const listings = (data ?? []) as unknown as Row[];
 
-  // Schools shown on cards (only the ones we need), recent activity for the ticker,
-  // and a "just joined" banner for schools added in the last 30 minutes (the live demo).
+  // Schools shown on cards (only the ones we need), and a "just joined" banner for schools added in the last 30 minutes (the live demo).
   const ids = [...new Set([school.id, ...listings.map((l) => l.school_id)])];
   const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-  const [{ data: cardSchools }, { data: recent }, { data: newSchools }, { count: campuses }] = await Promise.all([
+  const [{ data: cardSchools }, { data: newSchools }, { count: campuses }] = await Promise.all([
     supabase.from("schools").select("id, name, colors, email_domains").in("id", ids),
-    supabase.from("listings").select("title, status, school:schools(name)").order("created_at", { ascending: false }).limit(12),
     supabase.from("schools").select("id, slug, name, colors, slogan, logo_url").neq("id", school.id).gte("created_at", since).order("created_at", { ascending: false }).limit(1),
     supabase.from("schools").select("id", { count: "exact", head: true }),
   ]);
@@ -64,14 +62,6 @@ export default async function SchoolPage({ params, searchParams }: {
             : `The ${short} student marketplace. Buy, sell and trade in loops with classmates. Only verified ${school.email_domains?.[0]} students.`}</p>
         </div>
       </section>
-
-      {!!recent?.length && (
-        <div className="tick" aria-hidden>
-          <div>{[...recent, ...recent].map((r, i) => (
-            <span key={i}><b>{r.status === "active" ? "New" : r.status === "sold" ? "Sold" : "Traded"}</b>{r.title} · {(r.school as unknown as { name: string })?.name}</span>
-          ))}</div>
-        </div>
-      )}
 
       {user && <LoopBanner userId={user.id} />}
       <ImpactCounter schoolId={school.id} campuses={campuses ?? 1} />

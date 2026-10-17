@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { supabaseServer } from "@/lib/supabase/server";
 import { matchWaitingWants } from "@/lib/matchWants";
+import { moderate } from "@/lib/moderate";
 
 // Chat agent: turns "trade my shoes for a Norton Anthology or sell for $25" into
 // listings (haves) and wants. Tools run as the signed-in user, so RLS applies.
@@ -20,6 +21,7 @@ Rules:
 - Tickets must be posted with the photo form (ticket rules apply), not here. Say so.
 - Services (tutoring, haircut, nails, moving help) and rides are listings too (kind "service" or "ride").
 - Rides need from, to, and a departure date/time before you post. Ask for whichever is missing. Pickup spot is optional. Turn "Friday 3pm" into an exact date using today's date from the first message.
+- If a tool says something is not allowed, tell the student kindly why and don't try to post it another way.
 - Only describe what you actually saved. Never promise features Loop doesn't have (notifications, messaging, payments for rides).
 - After saving, confirm in one or two plain sentences what you saved. No markdown headers.`;
 
@@ -123,6 +125,8 @@ async function runTool(name: string, input: Record<string, unknown>, db: Supabas
       return error ? { error: error.message } : { results: data };
     }
     case "create_listing": {
+      const v = await moderate({ title: String(input.title), description: String(input.description ?? "") });
+      if (!v.allowed) return { error: `Not allowed on Loop: ${v.reason}` };
       // Drop the null detail fields so listings only store what applies.
       const details = Object.fromEntries(Object.entries(input.details as object).filter(([, v]) => v != null));
       const { data, error } = await db.from("listings").insert({ ...input, details, owner_id: me.id, school_id: me.school_id })
@@ -132,6 +136,8 @@ async function runTool(name: string, input: Record<string, unknown>, db: Supabas
       return { saved: data, students_already_waiting_for_this: waiting };
     }
     case "add_want": {
+      const v = await moderate({ text: String(input.text) });
+      if (!v.allowed) return { error: `Not allowed on Loop: ${v.reason}` };
       const { data, error } = await db.from("wants").insert({ ...input, user_id: me.id, school_id: me.school_id })
         .select("id, text, listing_id").single();
       return error ? { error: error.message } : { saved: data };

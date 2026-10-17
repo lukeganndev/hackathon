@@ -56,7 +56,8 @@ export default function NewListing() {
     const draft = await res.json();
     setStatus("");
     if (!res.ok) return setError(draft.error);
-    if (!draft.allowed) return setError("That item isn't allowed on Loop.");
+    // Disallowed photo: drop it so it can't be posted anyway.
+    if (!draft.allowed) { setPhotoUrl(null); return setError("That item isn't allowed on Loop. Try a different photo."); }
     setF((old) => ({
       ...old,
       title: draft.title, description: draft.description, category: draft.category,
@@ -68,24 +69,25 @@ export default function NewListing() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return router.push("/login");
-    const { data: profile } = await supabase.from("profiles").select("id, school_id").eq("id", user.id).single();
-    if (!profile) return router.push("/login");
     const cents = (v: string) => (v ? Math.round(parseFloat(v) * 100) : null);
     const details =
       kind === "ride" ? { from: f.from, to: f.to, depart_at: f.depart_at, seats: Number(f.seats), ...(f.pickup && { pickup: f.pickup }) }
       : kind === "service" ? { unit: f.unit, ...(f.category === "tutoring" && { course: f.course }) }
       : {};
-    const { data, error } = await supabase.from("listings").insert({
-      school_id: profile.school_id, owner_id: profile.id, kind, details,
-      title: f.title, description: f.description, category: f.category,
-      price_cents: f.tradeOnly ? null : cents(f.price),
-      photo_url: photoUrl,
-      ticket_type: kind === "item" && f.ticket_type ? f.ticket_type : null,
-      face_value_cents: kind === "item" && f.ticket_type ? cents(f.face_value) : null,
-    }).select("id").single();
-    if (error) return setError(error.message); // includes ticket policy errors from the DB
+    // Server checks it (AI moderation + DB rules) before it goes live.
+    setStatus("Checking your listing…");
+    const res = await fetch("/api/listings", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        kind, details, title: f.title, description: f.description, category: f.category,
+        price_cents: f.tradeOnly ? null : cents(f.price),
+        photo_url: photoUrl,
+        ticket_type: kind === "item" && f.ticket_type ? f.ticket_type : null,
+        face_value_cents: kind === "item" && f.ticket_type ? cents(f.face_value) : null,
+      }),
+    });
+    const data = await res.json().catch(() => ({ error: "Couldn't post. Try again." }));
+    if (!res.ok) { setStatus(""); return setError(data.error); } // moderation, banned words, ticket policy
     setStatus("Checking who's already looking for this…");
     await fetch("/api/ai/match", { method: "POST", body: JSON.stringify({ listingId: data.id }) }).catch(() => {});
     router.push(`/listings/${data.id}`);
