@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
+import { ImpactCounter } from "./ImpactCounter";
 
 type School = { id: string; slug: string; name: string; colors: { primary: string } };
 
@@ -42,6 +43,7 @@ export default async function SchoolPage({ params, searchParams }: {
       ))}
 
       <h1 className="text-3xl font-bold text-[var(--school)]">{school.name}</h1>
+      <ImpactCounter schoolId={school.id} schoolName={school.name} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <nav className="flex gap-2" aria-label="Which campuses">
           <Link href={`/${slug}`} className={tab(!all)} aria-current={!all ? "page" : undefined}>{school.name.replace(/^The /, "")}</Link>
