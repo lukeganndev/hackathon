@@ -43,6 +43,7 @@ Team: 3 beginners using Codex + Claude.
   - Ticket policy enforced by DB trigger: transfer_only = no cash, face_value_cap = price <= face.
   - Trades/legs/codes: clients read only; writes via `supabaseAdmin()` in server routes. Code table readable by receiver only.
   - `wants.listing_id` = concrete matcher edge; null = fuzzy want for AI to resolve.
+  - `listings.kind` = item | service | ride; `details` jsonb holds per-kind fields (ride: from/to/depart_at/seats; service: unit, course). Services (tutoring, haircut, nails, moving_help) and rides stay active after a deal, so the matcher must not mark them traded. Services/rides can be loop legs ("tutoring for a ride").
   - Storage bucket `listing-photos`, upload path `<uid>/file`.
 - `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
 - Not yet: Supabase project, `.env.local`, Vercel, git push to origin (github.com/lukeganndev/hackathon).

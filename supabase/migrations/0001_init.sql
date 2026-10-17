@@ -57,7 +57,19 @@ create table listings (
   owner_id uuid not null references profiles on delete cascade,
   title text not null,
   description text,
-  category text,                                -- textbooks, clothing, tickets, furniture, electronics, other
+  -- item: physical thing, leaves the pool once traded/sold.
+  -- service/ride: reusable, stays active after a deal (rides until seats run out).
+  kind text not null default 'item' check (kind in ('item', 'service', 'ride')),
+  -- item: textbooks, clothing, tickets, furniture, electronics, dorm, lab, other
+  -- service: tutoring, haircut, nails, moving_help, other
+  -- ride: rides
+  category text,
+  -- Per-kind extras, shape set by the form:
+  --   ride:    {"from":"Tuscaloosa","to":"Atlanta","depart_at":"2026-11-20T15:00","seats":3}
+  --   service: {"unit":"hour","course":"CH 101"}   (unit: hour | session; course only for tutoring)
+  details jsonb not null default '{}',
+  -- item: total price. service: price per unit. ride: gas share per seat.
+  -- ponytail: ride "cost-share only" is policy + AI moderation, not enforced; add a per-mile cap if abused.
   price_cents int check (price_cents >= 0),     -- null = trade only
   photo_url text,
   ticket_type text,                             -- null = not a ticket; else key into schools.ticket_policies
@@ -67,6 +79,7 @@ create table listings (
   created_at timestamptz not null default now()
 );
 create index on listings (school_id, status);
+create index on listings (kind, category) where status = 'active';
 
 -- Ticket policy enforced in the DB so no client can skip it.
 create function enforce_ticket_policy() returns trigger
