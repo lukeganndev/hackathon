@@ -1,9 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ink, themeVars, type School } from "@/lib/schoolTheme";
 import { Crest } from "../Crest";
+import { LoginShowcase } from "./LoginShowcase";
+import styles from "./login.module.css";
 
 type GateSchool = School & { email_domains: string[] };
 
@@ -15,10 +17,11 @@ const resolve = (email: string, schools: GateSchool[]) => {
 };
 
 // Sign-in gate from the design: type your .edu and the whole page rethemes to your school.
-// Email OTP: Supabase emails a 6-digit code (template includes {{ .Token }}).
+// Email OTP: Supabase emails an 8-digit code (template includes {{ .Token }}).
 export function LoginGate({ schools }: { schools: GateSchool[] }) {
   const supabase = supabaseBrowser();
   const router = useRouter();
+  const dialog = useRef<HTMLDialogElement>(null);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
@@ -66,6 +69,7 @@ export function LoginGate({ schools }: { schools: GateSchool[] }) {
         ? "That code didn't work. Use the code from the newest email, or resend." : error.message);
     }
     // Welcome splash in school colors, then into the campus marketplace.
+    dialog.current?.close();
     setWelcome(school);
     setTimeout(() => { router.push(`/${school?.slug ?? ""}`); router.refresh(); }, 2300);
   }
@@ -77,22 +81,23 @@ export function LoginGate({ schools }: { schools: GateSchool[] }) {
           <div><Crest school={welcome} /><h2>{welcome.slogan ?? "Welcome"}!</h2><p style={{ opacity: .85 }}>Welcome to the {welcome.name} marketplace</p></div>
         </div>
       )}
-      <div className="gate">
-        <h1>Your campus, on Loop.</h1>
-        <p>Sign in with your school email. We read your .edu and open your campus marketplace automatically.</p>
-        <div className="flex items-center gap-3" style={{ minHeight: 64 }} aria-live="polite">
-          {school && <><Crest school={school} className="crest" /><div><b>{school.name}</b><br /><small className="mute">{school.slogan}</small></div></>}
-        </div>
+      <LoginShowcase schools={schools} onSignIn={() => dialog.current?.showModal()} />
+      <dialog ref={dialog} className={styles.signInDialog} aria-labelledby="sign-in-title"
+        onClick={(e) => { if (e.target === e.currentTarget) dialog.current?.close(); }}>
+      <div className={styles.dialogContent}>
+        <button type="button" className={styles.close} onClick={() => dialog.current?.close()} aria-label="Close sign in">×</button>
+        <h2 id="sign-in-title">Find your campus.</h2>
+        <p className={styles.dialogIntro}>Sign in or join with your school email. We&apos;ll take you straight to your people.</p>
         {!sent ? (
           <form onSubmit={send} className="flex flex-col gap-2">
             <label htmlFor="email" className="sr-only">School email</label>
-            <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value.trim())} placeholder="you@crimson.ua.edu" />
+            <input id="email" type="email" autoComplete="email" autoFocus required value={email} onChange={(e) => setEmail(e.target.value.trim())} placeholder="you@crimson.ua.edu" />
             <button disabled={busy} className="btn">{busy ? "Sending…" : "Send verification code"}</button>
           </form>
         ) : (
           <form onSubmit={verify} className="flex flex-col gap-2">
             <label htmlFor="code">Code sent to {email}</label>
-            <input id="code" inputMode="numeric" autoComplete="one-time-code" required value={code} placeholder="6-digit code"
+            <input id="code" inputMode="numeric" autoComplete="one-time-code" required value={code} placeholder="8-digit code"
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} style={{ letterSpacing: ".3em" }} />
             <button disabled={busy} className="btn">{busy ? "Checking…" : "Verify and enter"}</button>
             <p className="note">It can take up to a minute to arrive. Check spam. Only the newest code works.</p>
@@ -104,9 +109,11 @@ export function LoginGate({ schools }: { schools: GateSchool[] }) {
             </div>
           </form>
         )}
+        {school && <div className={styles.schoolPreview} aria-live="polite"><Crest school={school} /><div><b>{school.name}</b><br /><small className="mute">{school.slogan}</small></div></div>}
         {error && <p role="alert" style={{ color: "#b3261e" }}>{error}</p>}
-        <p className="note" style={{ marginTop: 16 }}>Try typing <b>@vt.edu</b>, <b>@umich.edu</b> or <b>@lsu.edu</b>: the whole site rethemes to that school. {schools.length} campuses are live.</p>
+        <p className={styles.dialogNote}>No password to remember. Just a verification code sent to your inbox.</p>
       </div>
+      </dialog>
     </>
   );
 }

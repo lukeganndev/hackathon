@@ -164,10 +164,14 @@ img, svg { max-width: 100%; }
   .band::after { width: 200px; height: 200px; right: -110px; top: -45px; border-width: 24px; }
   .stats { gap: 14px 0; justify-content: space-between; font-size: 11px; } .stats > div { width: 33%; } .stats b { font-size: 22px; }
   .seg { width: 100%; } .seg a { flex: 1; text-align: center; min-height: 40px; display: grid; place-items: center; }
+  .browse-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+  .browse-controls .seg, .browse-controls input[name="q"], .browse-controls > a { grid-column: 1 / -1; }
+  .browse-controls input[name="q"], .browse-controls select { width: 100%; min-width: 0 !important; }
+  .browse-controls > a { display: grid; place-items: center; }
   .lgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .tile { height: 136px; } .tile .ic { width: 60px; height: 60px; }
   .tag { font-size: 8px; left: 7px; top: 8px; max-width: calc(100% - 14px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 3px 6px; }
-  .cb { padding: 11px; } .cb h3 { font-size: 15.5px; line-height: 1.25; }
+  .cb { padding: 11px; } .cb h3 { font-size: 15.5px; line-height: 1.25; overflow-wrap: anywhere; }
   .crow { flex-direction: column; gap: 4px; font-size: 11px; } .crow b { font-size: 18px; }
   .gate { padding: 24px 20px; margin: 16px auto; }
   .ask { padding: 14px; } .ask-head p { display: none; }

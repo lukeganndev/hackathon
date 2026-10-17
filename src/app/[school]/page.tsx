@@ -25,6 +25,7 @@ export default async function SchoolPage({ params, searchParams }: {
 
   let query = supabase.from("listings").select("id, title, price_cents, photo_url, kind, category, school_id, owner:profiles(display_name)")
     .eq("status", "active").order("created_at", { ascending: false }).limit(60);
+  if (user) query = query.neq("owner_id", user.id);
   if (!all) query = query.eq("school_id", school.id);
   if (q) query = query.ilike("title", `%${q.replace(/[%_]/g, "")}%`);
   if (cat) query = query.eq("category", cat);
@@ -68,7 +69,7 @@ export default async function SchoolPage({ params, searchParams }: {
       {user && <LoopBanner userId={user.id} />}
       <ImpactCounter schoolId={school.id} campuses={campuses ?? 1} />
 
-      <form className="flex flex-wrap gap-3 items-center" action={`/${slug}`}>
+      <form className="browse-controls flex flex-wrap gap-3 items-center" action={`/${slug}`}>
         <nav className="seg" aria-label="Which campuses">
           {tab(`/${slug}`, !all, "My campus")}
           {tab(`/${slug}?all=1`, all, "All campuses")}
@@ -85,7 +86,7 @@ export default async function SchoolPage({ params, searchParams }: {
         <Link href="/listings/new" className="btn">+ Sell or trade</Link>
       </form>
 
-      {!listings.length && <p className="mute" style={{ padding: "40px 0" }}>{user ? "Nothing here yet. Be the first to list something." : "Sign in to see your campus."}</p>}
+      {!listings.length && <p className="mute" style={{ padding: "40px 0" }}>{user ? "No listings from other students here yet. Your own listings are in My stuff." : "Sign in to see your campus."}</p>}
       <div className="lgrid">
         {listings.map((l, i) => (
           <ListingCard key={l.id} l={l} school={byId[l.school_id] ?? school} seller={l.owner?.display_name}
