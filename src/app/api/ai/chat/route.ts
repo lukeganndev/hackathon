@@ -77,6 +77,15 @@ const tools: Anthropic.Beta.BetaTool[] = [
   },
 ];
 
+const STATUS: Record<string, string> = {
+  search_listings: "Searching listings on every campus…",
+  my_listings: "Checking what you've already posted…",
+  create_listing: "Posting your listing…",
+  add_want: "Saving what you want…",
+};
+
+export const maxDuration = 60;
+
 type Supabase = Awaited<ReturnType<typeof supabaseServer>>;
 type Profile = { id: string; school_id: string };
 
@@ -117,34 +126,45 @@ export async function POST(req: Request) {
   const { messages } = (await req.json()) as { messages: Anthropic.Beta.BetaMessageParam[] };
   if (!Array.isArray(messages) || !messages.length) return Response.json({ error: "No message" }, { status: 400 });
 
-  try {
-    // ponytail: cap of 8 model calls per user message; raise if it gives up early.
-    for (let i = 0; i < 8; i++) {
-      const response = await client.beta.messages.create({
-        model: "claude-opus-5-5",
-        max_tokens: 16000,
-        betas: ["server-side-fallback-2026-07-01"],
-        fallbacks: "default",
-        output_config: { effort: "low" },
-        system: SYSTEM,
-        tools,
-        messages,
-      });
-      messages.push({ role: "assistant", content: response.content });
-      if (response.stop_reason === "refusal") break;
-      if (response.stop_reason !== "tool_use") break;
+  // Streams newline-delimited JSON: {status} lines while working, then {messages} or {error}.
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(ctrl) {
+      const send = (o: object) => ctrl.enqueue(enc.encode(JSON.stringify(o) + "\n"));
+      try {
+        send({ status: "Reading your message…" });
+        // ponytail: cap of 8 model calls per user message; raise if it gives up early.
+        for (let i = 0; i < 8; i++) {
+          const response = await client.beta.messages.create({
+            model: "claude-opus-5-5",
+            max_tokens: 16000,
+            betas: ["server-side-fallback-2026-07-01"],
+            fallbacks: "default",
+            output_config: { effort: "low" },
+            system: SYSTEM,
+            tools,
+            messages,
+          });
+          messages.push({ role: "assistant", content: response.content });
+          if (response.stop_reason !== "tool_use") break; // also covers "refusal"
 
-      const results: Anthropic.Beta.BetaToolResultBlockParam[] = [];
-      for (const block of response.content) {
-        if (block.type !== "tool_use") continue;
-        const out = await runTool(block.name, block.input as Record<string, unknown>, db, me);
-        results.push({ type: "tool_result", tool_use_id: block.id, content: JSON.stringify(out), is_error: "error" in out });
+          const results: Anthropic.Beta.BetaToolResultBlockParam[] = [];
+          for (const block of response.content) {
+            if (block.type !== "tool_use") continue;
+            send({ status: STATUS[block.name] ?? "Working…" });
+            const out = await runTool(block.name, block.input as Record<string, unknown>, db, me);
+            results.push({ type: "tool_result", tool_use_id: block.id, content: JSON.stringify(out), is_error: "error" in out });
+          }
+          messages.push({ role: "user", content: results });
+          send({ status: "Writing a reply…" });
+        }
+        send({ messages });
+      } catch (e) {
+        console.error("ai/chat", e);
+        send({ error: "AI is busy, try again." });
       }
-      messages.push({ role: "user", content: results });
-    }
-    return Response.json({ messages });
-  } catch (e) {
-    console.error("ai/chat", e);
-    return Response.json({ error: "AI is busy, try again." }, { status: 502 });
-  }
+      ctrl.close();
+    },
+  });
+  return new Response(stream, { headers: { "Content-Type": "application/x-ndjson" } });
 }

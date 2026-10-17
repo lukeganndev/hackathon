@@ -32,20 +32,38 @@ export default function Chat() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
   const [error, setError] = useState("");
 
   async function send(text: string) {
     if (!text.trim() || busy) return;
     setError("");
     setBusy(true);
+    setStatus("");
     const next: Msg[] = [...messages, { role: "user", content: text }];
     setMessages(next);
     setDraft("");
+    const fail = (msg: string) => { setBusy(false); setStatus(""); setMessages(messages); setDraft(text); setError(msg); };
     const res = await fetch("/api/ai/chat", { method: "POST", body: JSON.stringify({ messages: next }) });
-    const data = await res.json();
+    if (!res.ok || !res.body) return fail((await res.json().catch(() => ({}))).error ?? "Something went wrong");
+    // Read progress lines as they arrive; the last line has the full history.
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buf = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += value;
+      const lines = buf.split("\n");
+      buf = lines.pop()!;
+      for (const line of lines.filter(Boolean)) {
+        const ev = JSON.parse(line);
+        if (ev.status) setStatus(ev.status);
+        if (ev.error) return fail(ev.error);
+        if (ev.messages) setMessages(ev.messages);
+      }
+    }
     setBusy(false);
-    if (!res.ok) { setMessages(messages); setDraft(text); return setError(data.error); }
-    setMessages(data.messages);
+    setStatus("");
   }
 
   return (
@@ -73,7 +91,7 @@ export default function Chat() {
               {r.text}
             </p>
           ))}
-        {busy && <p className="self-start opacity-60">Thinking…</p>}
+        {busy && <p className="self-start opacity-60 animate-pulse">{status || "Thinking…"}</p>}
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); send(draft); }} className="flex gap-2">
