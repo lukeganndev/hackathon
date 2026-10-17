@@ -58,6 +58,7 @@ Team: 3 beginners using Codex + Claude.
 - Impact counter on `/[school]` (`ImpactCounter.tsx`, admin aggregate counts): students, live listings, items reused, $ kept on campus, loops closed.
 - `/listings/mine`: your listings + wants with Remove (soft delete). Report button on listings; `0003_reports.sql` installed (3 reports auto-hide).
 - Stripe (Luke): `src/lib/stripeHolds.ts` tested in test mode (hold/capture/release, idempotent). `0004_stripe_cash_legs.sql` installed. Wired in `src/app/api/trades/_lib/server.ts` mutate(): hold on accepted, capture on confirm, release on cancel.
+- Ratings: `0005_ratings.sql` installed (insert only after a code-confirmed handoff, by its two people, once; `rating_summary` view). Profile `/u/[id]`, stars on listings, "Rate your recent trades" on `/listings/mine`. Buy button = 1-leg cash trade.
 - Demo data: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (re-runnable, demo rows tagged `details.demo`/`[demo]` wants). Loop lrgann -> hlpenick -> egbarber -> lrgann.
 - Login works on live site (Gmail SMTP saved, Magic Link + Confirm signup templates send `{{ .Token }}`).
 - Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).

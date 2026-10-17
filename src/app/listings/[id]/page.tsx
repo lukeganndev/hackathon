@@ -4,6 +4,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { WantButton } from "./WantButton";
 import { ReportButton } from "./ReportButton";
 import { BuyButton } from "./BuyButton";
+import { Stars } from "@/app/u/Stars";
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -16,6 +17,8 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
     .select("*, owner:profiles(display_name), school:schools(name, slug, colors)")
     .eq("id", id).single();
   if (!l) notFound();
+  const { data: sellerRating } = await supabase
+    .from("rating_summary").select("avg_stars, review_count").eq("ratee_id", l.owner_id).maybeSingle();
   const { count: wanted } = await supabase
     .from("wants").select("id", { count: "exact", head: true }).eq("listing_id", id).eq("active", true);
   const { data: myWant } = await supabase
@@ -38,7 +41,12 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
       {l.kind === "service" && d.course && <p>📚 {d.course}</p>}
       {!!wanted && <p className="rounded bg-[var(--school)] text-white px-3 py-2 self-start">🔔 {wanted} student{wanted === 1 ? " wants" : "s want"} this</p>}
       {l.description && <p>{l.description}</p>}
-      <p className="text-sm opacity-70">Posted by {l.owner.display_name} · {l.category?.replace("_", " ")}</p>
+      <p className="text-sm flex flex-wrap items-center gap-2">
+        <span className="opacity-70">Posted by</span>
+        <Link href={`/u/${l.owner_id}`} className="underline font-medium">{l.owner.display_name}</Link>
+        <Stars avg={sellerRating?.avg_stars ?? null} count={sellerRating?.review_count ?? 0} />
+        <span className="opacity-70">· {l.category?.replace("_", " ")}</span>
+      </p>
       {l.ticket_type && <p className="text-sm opacity-70">🎟 Transfers through the official ticket account. Payment is held until the buyer confirms.</p>}
 
       {l.owner_id === user.id

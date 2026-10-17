@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { RemoveButton } from "./RemoveButton";
+import { RateForm } from "./RateForm";
 
 const money = (c: number | null) => (c == null ? "Trade only" : `$${(c / 100).toFixed(2)}`);
 
@@ -9,15 +10,37 @@ export default async function MyStuff() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return <main><Link href="/login" className="underline">Sign in</Link> to see your stuff.</main>;
 
-  const [{ data: listings }, { data: wants }] = await Promise.all([
+  const [{ data: listings }, { data: wants }, { data: done }, { data: rated }] = await Promise.all([
     supabase.from("listings").select("id, title, price_cents, status, kind")
       .eq("owner_id", user.id).neq("status", "removed").order("created_at", { ascending: false }),
     supabase.from("wants").select("id, text, listing_id, listing:listings(title)")
       .eq("user_id", user.id).eq("active", true).order("created_at", { ascending: false }),
+    supabase.from("trade_legs").select("id, giver_id, receiver_id, listing:listings(title)")
+      .not("confirmed_at", "is", null).or(`giver_id.eq.${user.id},receiver_id.eq.${user.id}`),
+    supabase.from("ratings").select("trade_leg_id").eq("rater_id", user.id),
   ]);
+  // Confirmed handoffs I haven't reviewed yet.
+  const ratedIds = new Set(rated?.map((r) => r.trade_leg_id));
+  const toRate = (done ?? []).filter((l) => !ratedIds.has(l.id))
+    .map((l) => ({ ...l, other: l.giver_id === user.id ? l.receiver_id : l.giver_id }));
+  const { data: names } = toRate.length
+    ? await supabase.from("profiles").select("id, display_name").in("id", toRate.map((l) => l.other))
+    : { data: [] };
+  const nameOf = (id: string) => names?.find((n) => n.id === id)?.display_name ?? "them";
 
   return (
     <main className="grid md:grid-cols-2 gap-8">
+      {!!toRate.length && (
+        <section className="md:col-span-2 flex flex-col gap-3">
+          <h2 className="text-2xl font-bold">Rate your recent trades</h2>
+          <div className="grid md:grid-cols-2 gap-3">
+            {toRate.map((l) => (
+              <RateForm key={l.id} legId={l.id} rateeId={l.other} rateeName={nameOf(l.other)}
+                title={(l.listing as unknown as { title: string } | null)?.title ?? "your trade"} />
+            ))}
+          </div>
+        </section>
+      )}
       <section className="flex flex-col gap-3">
         <h1 className="text-2xl font-bold">What you have</h1>
         {!listings?.length && <p>Nothing posted yet. <Link href="/listings/new" className="underline">Post something</Link>.</p>}
