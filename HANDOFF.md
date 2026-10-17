@@ -45,7 +45,7 @@ Team: 3 beginners using Codex + Claude.
   - `wants.listing_id` = concrete matcher edge; null = fuzzy want for AI to resolve.
   - Storage bucket `listing-photos`, upload path `<uid>/file`.
 - `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
-- Not yet: Supabase project, `.env.local`, Vercel, git commit of scaffold.
+- Not yet: Supabase project, `.env.local`, Vercel, git push to origin (github.com/lukeganndev/hackathon).
 
 ## Next steps
 1. Create Supabase project, run migration + seed, set email template `{{ .Token }}`, fill `.env.local`, share keys with team.
