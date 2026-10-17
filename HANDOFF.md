@@ -56,6 +56,7 @@ Team: 3 beginners using Codex + Claude.
 - Cross-campus: `/[school]?all=1` toggle, school tags, rivalry banner per other school. Auburn NOT in DB; add live in pitch with `supabase/demo_add_auburn.sql`.
 - Wants that wait: `src/lib/matchWants.ts` links open fuzzy wants to a new listing (Claude, strict match). Runs after form post (`/api/ai/match`) and in chat `create_listing`. Listing page shows "N students want this".
 - Impact counter on `/[school]` (`ImpactCounter.tsx`, admin aggregate counts): students, live listings, items reused, $ kept on campus, loops closed.
+- `/listings/mine`: your listings + wants with Remove (soft delete). Report button on listings; `0003_reports.sql` installed (3 reports auto-hide).
 - Demo data: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (re-runnable, demo rows tagged `details.demo`/`[demo]` wants). Loop lrgann -> hlpenick -> egbarber -> lrgann.
 - Login works on live site (Gmail SMTP saved, Magic Link + Confirm signup templates send `{{ .Token }}`).
 - Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { WantButton } from "./WantButton";
+import { ReportButton } from "./ReportButton";
 
 export default async function ListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -44,6 +45,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
         : l.status === "active"
           ? <WantButton listingId={l.id} title={l.title} wanted={!!myWant} />
           : <p className="rounded bg-gray-100 dark:bg-gray-800 p-3">No longer available.</p>}
+      {l.owner_id !== user.id && <ReportButton listingId={l.id} />}
     </main>
   );
 }
