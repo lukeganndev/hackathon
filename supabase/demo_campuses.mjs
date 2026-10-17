@@ -6,6 +6,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import assert from "node:assert/strict";
 import { createClient } from "@supabase/supabase-js";
+import { demoPhoto } from "./demo_photo.mjs";
 
 const TAG = "cross-campus-parody-v1";
 const fiction = "Fictional Loop demo listing; not posted by the named person. ";
@@ -120,8 +121,8 @@ if (!apply && !verify) {
     const rows = campus.items.map(([seller, title, category, price_cents, image, joke], index) => ({
       id: stableId(`${campus.slug}:listing:${index}`), school_id: school.id, owner_id: owners[seller],
       title, description: fiction + joke, kind: "item", category, price_cents,
-      photo_url: image ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-photos/demo/${image}.jpg` : null,
-      details: { demo: TAG, fictional: true, ...(image ? { photo_credit: credits[image] } : {}) },
+      photo_url: demoPhoto(title)?.photo_url ?? (image ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-photos/demo/${image}.jpg` : null),
+      details: { demo: TAG, fictional: true, ...(image ? { photo_credit: credits[image] } : {}), ...demoPhoto(title)?.details },
     }));
     const missing = rows.filter((row) => !existing.some((old) => old.id === row.id));
     if (apply && missing.length) {

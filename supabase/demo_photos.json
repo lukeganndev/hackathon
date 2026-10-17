@@ -1,0 +1,345 @@
+{
+  "Rain jacket, men's L": {
+    "path": "demo/realistic-v1/b222b659-c0fb-4e6b-8825-dfe264c94447-446e8338b0.jpg",
+    "source": "https://tiendamia.com/producto?amz=B07QNSZV5X&pName=Outdoor+Ventures+Men%27s+Rain+Jacket+Waterproof+Lightweight+Packable+Rain+Shell+Raincoat+with+Hood+for+Golf+Hiking+Travel%2F",
+    "original": "https://m.media-amazon.com/images/I/71vMWTpEkiL._AC_SL1500_.jpg",
+    "sha256": "446e8338b0d61a2622a99ffbcb68e225cd0462938c49a461b0bd781cd62585a1",
+    "listing_id": "b222b659-c0fb-4e6b-8825-dfe264c94447"
+  },
+  "Crimson hoodie, size M": {
+    "path": "demo/realistic-v1/9897470f-8961-47d6-817c-f6fdfe22b702-aadc0e3719.jpg",
+    "source": "https://www.landsend.com/products/unisex-pullover-hoodie-sweatshirt/id_367619",
+    "original": "https://s7.landsend.com/is/image/LandsEnd/532166_LEPP_LF_BUR",
+    "sha256": "aadc0e3719f00ddd4e9e79b1476038c7ca0c5bbf972540dd49dd77d27e146b2f",
+    "listing_id": "9897470f-8961-47d6-817c-f6fdfe22b702"
+  },
+  "27-inch monitor": {
+    "path": "demo/realistic-v1/eba29627-bbac-40c3-82ea-f0b20413139e-4593386b2e.jpg",
+    "source": "https://www.samsclub.com/ip/LG-27-FHD-3-Side-Borderless-IPS-100Hz-Monitor-with-FreeSync/18637600674",
+    "original": "https://i5.samsclubimages.com/asr/663c1885-a519-41f7-b1f5-d840c84453cc.2caef167fc82534e1fcb87a2e5c68348.jpeg",
+    "sha256": "4593386b2e36ecafdb835a3b699674c567ef9fcdf2c7e14d48d49d79332e6176",
+    "listing_id": "eba29627-bbac-40c3-82ea-f0b20413139e"
+  },
+  "Wireless earbuds": {
+    "path": "demo/realistic-v1/8ac0f5be-8862-4d24-b6da-0a5c30077b65-18c06d1987.jpg",
+    "source": "https://www.reswipe.be/en/wireless-earpods-xg-true-pro.html",
+    "original": "https://cdn.webshopapp.com/shops/277909/files/430023898/image.jpg",
+    "sha256": "18c06d19874fd828609a04b2567b65b6eaba2b3f83584e5b7bcc5269d28f8737",
+    "listing_id": "8ac0f5be-8862-4d24-b6da-0a5c30077b65"
+  },
+  "Road bike, 54cm": {
+    "path": "demo/realistic-v1/5e1a3b26-8335-4b62-bfaa-a753d5f813ca-ed2e5d27fe.jpg",
+    "source": "https://www.trekbikes.com/us/en_US/pre-owned-bikes/pre-owned-road-bikes/domane-4-7--2014-54cm/p/58275/",
+    "original": "https://res.cloudinary.com/trekbikes/image/upload/b_rgb%3AFFFFFF%2Cc_pad%2Cdpr_2.0%2Cf_auto%2Ch_224%2Cq_auto%2Cw_400/c_pad%2Ch_224%2Cw_400/R14450004414-1-Portrait?pgw=1",
+    "sha256": "ed2e5d27fe05ff43bb10687c276b611c0cbe7e19bd5c103854cea98755a0e4d9",
+    "listing_id": "5e1a3b26-8335-4b62-bfaa-a753d5f813ca"
+  },
+  "5-shelf bookcase": {
+    "path": "demo/realistic-v1/704866b9-f328-48c7-a091-4d76cce9c3f6-d3bc65c9d9.jpg",
+    "source": "https://epicofficefurniture.com/bush-cabot-collection-5-shelf-bookcase-white-wc31966/",
+    "original": "https://cdn11.bigcommerce.com/s-71bfm8/images/stencil/1280x1280/products/167944/505035/WC31966-01__23135.1673485999.jpg?c=2",
+    "sha256": "d3bc65c9d93ba63947d21dc28d5db1fd3bcc5bf9dbce96183a7309c19e40cc62",
+    "listing_id": "704866b9-f328-48c7-a091-4d76cce9c3f6"
+  },
+  "Desk chair": {
+    "path": "demo/realistic-v1/19bedd00-c678-4f0a-9403-c4da0731ec4d-a213df4315.jpg",
+    "source": "https://www.ikea.is/en/products/working-from-home/desk-chairs/office-chairs/markus-office-chair-art-70261150",
+    "original": "https://www.ikea.is/static/web/ikea4/images/247/0724714_PE734597_S5.jpg?v=2cd25359",
+    "sha256": "a213df4315b09777b2fc25236ee4107efd0f9a396ff49d1591252553410391cc",
+    "listing_id": "19bedd00-c678-4f0a-9403-c4da0731ec4d"
+  },
+  "Keurig coffee maker": {
+    "path": "demo/realistic-v1/0ee7a8e4-d1e9-4783-aa61-b939f163f9a2-976fe99c0c.jpg",
+    "source": "https://www.walmart.com/ip/Keurig-K-Mini-Single-Serve-K-Cup-Pod-Coffee-Maker-Evergreen/3611196939",
+    "original": "https://i5.walmartimages.com/asr/bb24d26b-b425-48f1-b0be-64858d5c55fc.a92d9eeb87af6f524e300ed526c7856e.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768",
+    "sha256": "976fe99c0c0f510df13f049f671fba7dfb6b2b1aef1e897913cba644988deda2",
+    "listing_id": "0ee7a8e4-d1e9-4783-aa61-b939f163f9a2"
+  },
+  "Norton Anthology of English Literature, 10th ed, Vol. 1": {
+    "path": "demo/realistic-v1/5a7ff262-b4c4-44e4-b740-2735a4976b9f-3a197a4437.jpg",
+    "source": "https://www.ebay.com/itm/335248954216",
+    "original": "https://i.ebayimg.com/images/g/ypEAAOSwgWdlxK~i/s-l1600.jpg",
+    "sha256": "3a197a443795032c6c6b57eedcdb43c682cd9c7aafacc395195bf2f31a8b7f42",
+    "listing_id": "5a7ff262-b4c4-44e4-b740-2735a4976b9f"
+  },
+  "On Cloud running shoes, men's size 10": {
+    "path": "demo/realistic-v1/477ebc0f-8f69-4948-a40a-41155a213116-7db188a35a.jpg",
+    "source": "https://www.adventure365.ca/on-running-cloud-5-52372106.html",
+    "original": "https://cdn.shoplightspeed.com/shops/611995/files/66847060/on-running-cloud-5-mens-running-shoe.jpg",
+    "sha256": "7db188a35a3f9182b1013257a9c416fae3259526d4d0928ad8e570cf76724b7a",
+    "listing_id": "477ebc0f-8f69-4948-a40a-41155a213116"
+  },
+  "Twin XL bedding set": {
+    "path": "demo/realistic-v1/c5a6cef3-a240-46ad-bf1d-ea2af947408f-148cd4c6f2.jpg",
+    "source": "https://twinxl.com/products/twinxl-down-alternative-comforter-set",
+    "original": "https://twinxl.com/cdn/shop/files/DustyBlue_MF_ComforterSet_NC_9.jpg?crop=center&height=2500&v=1763152985&width=2500",
+    "sha256": "148cd4c6f21d28665cd3deec2038aedaa1d28f828c3c4a0914f863a7e8ea305e",
+    "listing_id": "c5a6cef3-a240-46ad-bf1d-ea2af947408f"
+  },
+  "Organic Chemistry, Klein 4th ed": {
+    "path": "demo/realistic-v1/dcd37a55-79ca-497b-bf53-0f2e1362920d-d2352aea32.jpg",
+    "source": "https://www.carousell.ph/p/organic-chemistry-david-klein-4th-edition-1456721627/",
+    "original": "https://media.karousell.com/media/photos/products/2026/8/20/organic_chemistry__david_klein_1787230659_67650631_progressive.jpg",
+    "sha256": "d2352aea323e3d00ec43a9b176a1f5a62e9b4e593b624ebe32fdba9d849cc2d9",
+    "listing_id": "dcd37a55-79ca-497b-bf53-0f2e1362920d"
+  },
+  "CH 101 tutoring": {
+    "path": "demo/realistic-v1/9a642472-9032-4ff1-b62a-d55e0bac11e5-870142ac24.jpg",
+    "source": "https://www.canyons.edu/academics/tlc/tutoring/",
+    "original": "https://www.canyons.edu/_images/academics/tlc/TutoringinTLC.jpg",
+    "sha256": "870142ac243bbc92001a06ca285111263913cec48ea0835fa483124b44ee4867",
+    "listing_id": "9a642472-9032-4ff1-b62a-d55e0bac11e5"
+  },
+  "Iron Bowl ticket, upper deck": {
+    "path": "demo/realistic-v1/b1b1a8c3-633d-4cc2-bab2-08e12e64506b-5197dd033e.webp",
+    "source": "https://tide1009.com/everything-you-need-to-know-for-game-day-at-bryant-denny-stadium/",
+    "original": "https://townsquare.media/site/531/files/2022/08/attachment-Alabama-Stadium-Photo.jpeg?w=1200",
+    "sha256": "5197dd033e565a98c66c4af47694833733f45f34dc2857aa9a676caf9393bf71",
+    "listing_id": "b1b1a8c3-633d-4cc2-bab2-08e12e64506b"
+  },
+  "Mini fridge, 3.1 cu ft": {
+    "path": "demo/realistic-v1/e3f91548-0941-4ce2-97d8-e44877fcaa38-1c031b5c29.jpg",
+    "source": "https://www.walmart.com/ip/17464153565",
+    "original": "https://i5.walmartimages.com/seo/PhiloDeco-3-1-Cu-Ft-Compact-Refrigerator-with-Freezer-Adjustable-Thermostat-Removable-Shelves-Mini-Fridge-for-Apartment-Office-Dorm-Silver_79a594e2-f32d-45b4-b42e-11deb231977c.0eeb085613eff24a1abe279acc63f192.jpeg",
+    "sha256": "1c031b5c29b928670df73261440e37d815835aa62ccdbeb12d107ed48f97d4cf",
+    "listing_id": "e3f91548-0941-4ce2-97d8-e44877fcaa38"
+  },
+  "Desk lamp with USB port": {
+    "path": "demo/realistic-v1/6555ac1f-a92c-4584-8444-9cdd00e4402b-884ef253e2.jpg",
+    "source": "https://tiendamia.com/ec/p/amz/b0d1khj2hs/honeywell-led-desk-lamp-hwt-h2-sunturaluxtm-eye-caring-foldable-desk",
+    "original": "https://m.media-amazon.com/images/I/611EbGolgpL._AC_SL1500_.jpg",
+    "sha256": "884ef253e2b8320bcd3707ded1ffae7cce6f2e046d8cadd6463730467db536ac",
+    "listing_id": "6555ac1f-a92c-4584-8444-9cdd00e4402b"
+  },
+  "TI-84 Plus graphing calculator": {
+    "path": "demo/realistic-v1/4e456a12-6a3a-48f5-bf8c-a2ece63ad3c9-bc123f0c27.jpg",
+    "source": "https://www.walmart.com/ip/110883909",
+    "original": "https://i5.walmartimages.com/asr/4b3f1ef2-8bec-4186-a12b-f5ab31a74da6.c97a4027c185d2e8807c8c739514a2ed.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768",
+    "sha256": "bc123f0c27efbab31db07f339ba29256bf39fcf3f00e76c496eb0aa306c94574",
+    "listing_id": "4e456a12-6a3a-48f5-bf8c-a2ece63ad3c9"
+  },
+  "Ride Tuscaloosa → Birmingham, Sunday": {
+    "path": "demo/realistic-v1/8e96430a-ee2d-4150-ab78-2c37b99d201a-347159ee6f.jpg",
+    "source": "https://www.wvtm13.com/article/birmingham-tech-hub-biden-ai/45632088",
+    "original": "https://kubrick.htvapps.com/htv-prod-media.s3.amazonaws.com/images/birmingham-day-1495729628.jpg?crop=0.995xw%3A1.00xh%3B0.00481xw%2C0&resize=1200%3A%2A",
+    "sha256": "347159ee6ffc455ccadc1d4c2f66254e4551e18139ff801a0b81acd947d2ee74",
+    "listing_id": "8e96430a-ee2d-4150-ab78-2c37b99d201a"
+  },
+  "Ride Tuscaloosa → Nashville, Friday": {
+    "path": "demo/realistic-v1/96efb629-85d9-4583-9838-35ea6e598d7d-27a22c56de.jpg",
+    "source": "https://www.foxbusiness.com/money/top-us-states-fewer-taxes",
+    "original": "https://static.foxnews.com/foxnews.com/content/uploads/2022/06/GettyImages-1335681764.jpg",
+    "sha256": "27a22c56de69c6d7345e9d0e277d672404fffd0e8d510f3833f43da869821ecd",
+    "listing_id": "96efb629-85d9-4583-9838-35ea6e598d7d"
+  },
+  "Move-out help, 2 hours": {
+    "path": "demo/realistic-v1/0d98419f-f496-4eea-ad05-d0c281ef2585-72e4fb5f62.webp",
+    "source": "https://www.pods.com/blog/everything-you-need-to-know-about-moving-out-of-state",
+    "original": "https://azure-na-images.contentstack.com/v3/assets/blt738d1897c3c93fa6/bltb403d74ff025f29e/68503ea862bf791c466b6502/19_1_Moving_Method.webp",
+    "sha256": "72e4fb5f620c8cb7e875255443ab1c943d158ac497b1af4ae8b762b4ef697e2c",
+    "listing_id": "0d98419f-f496-4eea-ad05-d0c281ef2585"
+  },
+  "Dorm haircuts": {
+    "path": "demo/realistic-v1/0348dd26-d089-477c-b795-9a68f047f09a-814d88fa42.jpg",
+    "source": "https://classpass.com/studios/the-art-of-grooming-barbershop-sandy-springs",
+    "original": "https://classpass-res.cloudinary.com/image/upload/f_auto/q_auto/rff6uzu0twzwhznx6xqo.jpg",
+    "sha256": "814d88fa4240f52888cd54df62d9ef1db14a1d61500c9eda00747269a84c919d",
+    "listing_id": "0348dd26-d089-477c-b795-9a68f047f09a"
+  },
+  "Calc 2 tutoring": {
+    "path": "demo/realistic-v1/e8adcb50-a340-4c84-8708-1525fa76655d-6553a06f4f.jpg",
+    "source": "https://www.muji.com/jp/ja/shop/045739/articles/muji-staff/528111",
+    "original": "https://www.muji.com/public/media/jp/img/store/article/IMG_E1720_0.JPG",
+    "sha256": "6553a06f4f7f561ae4be0c794a238184b6c8419e8cd200ffbf925bc2bf3ac178",
+    "listing_id": "e8adcb50-a340-4c84-8708-1525fa76655d"
+  },
+  "Lab coat + safety goggles": {
+    "path": "demo/realistic-v1/a52c5af1-2b5a-4c1d-9a0e-c3bece8e7f90-fddbcad5d2.jpg",
+    "source": "https://kams.com.pl/p22083%2Ckomplet-zestaw-fartuch-laboratoryjny-bialy-bawelniany-medyczny-okulary-ochronne-xs-3xl.html",
+    "original": "https://kams.com.pl/galerie/k/komplet-zestaw-fartuch-labor_547049.jpg",
+    "sha256": "fddbcad5d283fe927eb1319aea57c574317d21d3a62bfd32f03cead8ac8d529b",
+    "listing_id": "a52c5af1-2b5a-4c1d-9a0e-c3bece8e7f90"
+  },
+  "Ride: Tuscaloosa → Atlanta, Fri Oct 23 3pm": {
+    "path": "demo/realistic-v1/0b5a8b82-9548-4aa9-ae2c-473d1625811a-0804b1db3b.jpg",
+    "source": "https://www.bizjournals.com/atlanta/news/2022/11/10/why-downtown-is-where-atlanta-s-future-lies.html",
+    "original": "https://media.bizj.us/view/img/12389867/1-downtown-atlanta-2%2A1200xx5464-3074-0-283.jpg",
+    "sha256": "0804b1db3b5a5552ee919c12931ad7d54c293cca9fe8c58a20ebef1e0ee15aa5",
+    "listing_id": "0b5a8b82-9548-4aa9-ae2c-473d1625811a"
+  },
+  "Ride: Tuscaloosa to Birmingham": {
+    "path": "demo/realistic-v1/569c2424-38b1-4d4f-bffc-fa9b1d7d44ad-957f2064d6.jpg",
+    "source": "https://www.datacenterdynamics.com/en/news/oak-hill-capital-invests-150m-in-lit-communities-to-boost-broadband-rollout/",
+    "original": "https://media.datacenterdynamics.com/media/images/GettyImages-1292267796.original.jpg",
+    "sha256": "957f2064d605388447e6b4d0d35c4775bf26eecb5320a9b23c2c023570121339",
+    "listing_id": "569c2424-38b1-4d4f-bffc-fa9b1d7d44ad"
+  },
+  "Alabama Crimson Tide #12 Nike Football Jersey, Size L": {
+    "path": "demo/realistic-v1/85a14c6c-10ed-4e36-99b8-125d4368af6e-15e5e079ab.webp",
+    "source": "https://www.ebay.com/b/Alabama-Crimson-Tide-Football-NCAA-Jerseys/24541/bn_16934465",
+    "original": "https://i.ebayimg.com/images/g/H0oAAeSwoO1pblla/s-l1200.webp",
+    "sha256": "15e5e079ab07bfc1a21d6c1fa40367fe44c355137f40454ee4f7ab46e3eee205",
+    "listing_id": "85a14c6c-10ed-4e36-99b8-125d4368af6e"
+  },
+  "Desk chair with elite swivel speed": {
+    "path": "demo/realistic-v1/0a7a2dd1-3aa7-5af9-815b-8b05cddd824b-a1d0f7c300.jpg",
+    "source": "https://ergonomika.es/products/silla-oficina-ergonomica-aeron-de-herman-miller-grafito-talla-l?srsltid=AfmBOooYjXc_8BR14NTSXxn5XqA_iUCe1o_5XDoUs67Ghj3wZ6ci0-Zr",
+    "original": "https://ergonomika.es/cdn/shop/files/REK_18350_20160811174715656_P-e1674209434990_9914b9fb-b4e3-46f2-a16c-cf8d45e7d414_grande.jpg?v=1732114662",
+    "sha256": "a1d0f7c300e164ceec388f40d2077f0ae6d6df939702036e51bf5b805b586493",
+    "listing_id": "0a7a2dd1-3aa7-5af9-815b-8b05cddd824b"
+  },
+  "Coffee maker for very early press conferences": {
+    "path": "demo/realistic-v1/c56f55e5-97a0-51fb-8916-d03327ea4cdc-b6a52a4fc4.jpg",
+    "source": "https://www.walmart.com/ip/39877812",
+    "original": "https://i5.walmartimages.com/asr/fdbb1c6b-4473-4225-b8ce-90a7912ae85e_1.2d770431768ffeb98446cad594801867.jpeg",
+    "sha256": "b6a52a4fc425982d64445bf0d2f4e554dc37ad64a88f5348ab11ed432b30a262",
+    "listing_id": "c56f55e5-97a0-51fb-8916-d03327ea4cdc"
+  },
+  "Moving boxes, suspiciously well traveled": {
+    "path": "demo/realistic-v1/cd814e09-a564-5ddd-8ee5-11b17fd31906-3839ccab17.jpg",
+    "source": "https://www.walmart.com/ip/17156353983",
+    "original": "https://i5.walmartimages.com/seo/Medium-Moving-Boxes-18x14x12-20-Pack-Cardboard-Boxes-Packing-Shipping-Office-Toys-Books-Clothes-USA-Made-Corrugated-Boxes-Medium-Boxes-Pack-20_ed54d6e0-64de-497b-946c-b0cc073efe83.f388f07e96db108a2d1c2bf1a8b23a32.jpeg",
+    "sha256": "3839ccab17187fe960bf6f6ce5a971bda19d8009c514a1c4cac1187b7ddf63b5",
+    "listing_id": "cd814e09-a564-5ddd-8ee5-11b17fd31906"
+  },
+  "Purple quarter-zip, lightly recruited": {
+    "path": "demo/realistic-v1/c850791a-9fe0-55b9-8caa-d50735882e1b-488398a4c7.jpg",
+    "source": "https://www.nyfifth.com/cutter-buck-mck01143-mens-adapt-eco-knit-quarter-zip-pullover-p-53245.html",
+    "original": "https://www.nyfifth.com/category/20211015/MCK01143clp.jpg",
+    "sha256": "488398a4c7bc196c0e0583ed40f5dbc8e0379adb0403c223f3fb60129dca43f4",
+    "listing_id": "c850791a-9fe0-55b9-8caa-d50735882e1b"
+  },
+  "Red rain jacket, championship weatherproofing": {
+    "path": "demo/realistic-v1/8a59c4bb-0ab7-5450-84ca-07826c589be1-a4da43a0e9.jpg",
+    "source": "https://ramseyoutdoor.com/products/mens-watertight-ii-jacket-mountain-red",
+    "original": "https://ramseyoutdoor.com/cdn/shop/files/1533891-watertightiijacket-mountainred-1.JPG?v=1715430248",
+    "sha256": "a4da43a0e96f7bcf17fd21d41b59805c9e1ee60f3f0f3c0b6f91c140bfb2af35",
+    "listing_id": "8a59c4bb-0ab7-5450-84ca-07826c589be1"
+  },
+  "Wireless earbuds, sideline noise optional": {
+    "path": "demo/realistic-v1/203b2234-aa9b-5ec9-864f-3ddc3525cf03-3aee857aa4.jpg",
+    "source": "https://www.ubaldi.com/son/casque-ecouteurs/samsung/ecouteurs-true-wireless-samsung--galaxy-buds-noir-sm-r170nzk--20583027.php",
+    "original": "https://medias-az-img.ubaldi.com/visuels/2320857/pr_GALAXYBUDSNOIR-685e3e8633-43.jpg",
+    "sha256": "3aee857aa4e5af1d30cda69f07e6348b4e9365b3a34a2070dad14a882020d1db",
+    "listing_id": "203b2234-aa9b-5ec9-864f-3ddc3525cf03"
+  },
+  "Mini fridge with room for the whole huddle": {
+    "path": "demo/realistic-v1/1af2243f-ab69-5dcd-8baf-eff558632022-eb079f85a1.jpg",
+    "source": "https://www.homedepot.ca/produit/frigidaire-mini-refrigerateur-frigidaire-compact-de-1-6-pieds-cube-blanc/1001213399",
+    "original": "https://homedepot.scene7.com/is/image/homedepotcanada/p_1001213399.jpg?hei=1000&op_sharpen=1&wid=1000",
+    "sha256": "eb079f85a1482e0a676973f4d800a66876dcec431e6304ae846df6d41fccef67",
+    "listing_id": "1af2243f-ab69-5dcd-8baf-eff558632022"
+  },
+  "Whiteboard: draw up your next A": {
+    "path": "demo/realistic-v1/15c17cb9-b14a-5f63-897e-27daa89aeebf-a61e106b69.jpg",
+    "source": "https://www.walmart.com/ip/Brier-Blue-Framed-Dry-Erase-Whiteboard-6-5-x-8-25-Ideal-Kitchen-Grocery-List-Kids-Drawing-Magnetic-Hanging-Dry-Erase-Whiteboard-Fridge-Locker-1-Pack/470500763",
+    "original": "https://i5.walmartimages.com/seo/Brier-Blue-Framed-Dry-Erase-Whiteboard-6-5-x-8-25-Ideal-Kitchen-Grocery-List-Kids-Drawing-Magnetic-Hanging-Fridge-Locker-More-1-Pack_f1071664-aaaf-4794-b4fb-d8c43a4b234e.cf5a210c6fbc097342620cc58d9505e4.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768",
+    "sha256": "a61e106b6994a5df03089d1d80e2af789fdd2c756a342d8c8f93709c9d372a5c",
+    "listing_id": "15c17cb9-b14a-5f63-897e-27daa89aeebf"
+  },
+  "Oxford button-down, Grove ready": {
+    "path": "demo/realistic-v1/dc594ef0-e9b8-5082-8f97-834ffa7ceec3-c451a41a15.jpg",
+    "source": "https://propercloth.com/dress-shirts/american-pima-light-blue-oxford-cloth-364762.html",
+    "original": "https://cdn2.propercloth.com/pic_cs/e331317c24660e8ec35b0724dffbf135_size6.jpg",
+    "sha256": "c451a41a1517581880334fe58a0afaad0b50f9cb8b34bd4de0954bb103f10a87",
+    "listing_id": "dc594ef0-e9b8-5082-8f97-834ffa7ceec3"
+  },
+  "Bookshelf for a very long family history": {
+    "path": "demo/realistic-v1/1def42aa-412e-5c1d-88e6-b7758a29bd5c-9564dda8c8.jpg",
+    "source": "https://www.litfad.com/es/12-wide-wood-frame-bookcase-with-closed-back-design-and-shelves-s-5935731.html",
+    "original": "https://res.litfad.com/site/img/item/2024/01/25/11580352/1200x1200.jpg",
+    "sha256": "9564dda8c89b762d7bf3739cf5ba3311151854b34b92c64aee987745fa157d33",
+    "listing_id": "1def42aa-412e-5c1d-88e6-b7758a29bd5c"
+  },
+  "Desk lamp for late-night film study": {
+    "path": "demo/realistic-v1/3b69c465-5284-5389-850d-7138fd5f3a81-1f18278614.jpg",
+    "source": "https://shop.zap.co.il/product-model?offerid=22822421",
+    "original": "https://mpimg.zap.co.il/medias/2269-7864842?context=bWFzdGVyfGltYWdlc3wxMzM1MHxpbWFnZS9qcGVnfGFHRmtMMmhoWXk4eE5qY3pNamMzTXpnME9UVXdNRFl2TWpJMk9WODNPRFkwT0RReXw0NWI3YzEzMjI4ZjgyOWUwZmU1OTAwZjQ1ZDQ1OTBkZWU3MWJhMmQ4YTExYmIyNmE3MGQ3N2ExYjhhNGJiMGRi",
+    "sha256": "1f18278614f55bd0ec038e153cc0435fbf64c2513bca3de8fdd01cdf3cc78129",
+    "listing_id": "3b69c465-5284-5389-850d-7138fd5f3a81"
+  },
+  "Coffee maker with a no-huddle setting": {
+    "path": "demo/realistic-v1/88158780-be65-54f7-81fa-48ab35ec79de-05d48c5c38.jpg",
+    "source": "https://minutes.noon.com/saudi-en/now-product/Z7C93A5A7C34A2EEF51F6Z-1/",
+    "original": "https://f.nooncdn.com/p/pzsku/Z5E4D50F737AB891A4ECDZ/45/_/1779704392/d08eeeb0-f34f-4e9a-ad47-0ebe588a45f9.jpg?width=720",
+    "sha256": "05d48c5c3839658bf627bc3b496bf0e0553aac2a922380d1540beada2f8b20e4",
+    "listing_id": "88158780-be65-54f7-81fa-48ab35ec79de"
+  },
+  "Omaha orange hoodie, size L": {
+    "path": "demo/realistic-v1/d6fdf8d2-5d3a-5be3-8b36-139c7f2f57a0-8628c259cd.jpg",
+    "source": "https://www.academy.com/p/nike-tennessee-tennessee-volunteers-club-fleece-arch-pullover-hoodie",
+    "original": "https://academy.scene7.com/is/image/academy/hoodies--sweatshirts/nike-tennessee-tennessee-volunteers-club-fleece-arch-pullover-hoodie-202489170/og-image/afb2aa44-1a86-4718-aff7-b475c2b4b73e",
+    "sha256": "8628c259cdce73f7239a48561081419295d35e19f00fd2f3846a4b6cf4154e34",
+    "listing_id": "d6fdf8d2-5d3a-5be3-8b36-139c7f2f57a0"
+  },
+  "TI-84 calculator, pre-snap calculations": {
+    "path": "demo/realistic-v1/f40fc5ba-0993-541a-8ba2-41a07287079d-5345a54452.jpg",
+    "source": "https://www.officesupply.com/school-supplies/basic-school-supplies/calculators/graphing-scientific-calculators/texas-instruments-plus-graphing-calculator/p562258.html?srsltid=AfmBOorTx6kg3teEZ0g2K56ga49EjHbVDNv8mObKmJXBJoi2DVj_-FpP",
+    "original": "https://de2wfhoo6xqi5.cloudfront.net/size/600/e8e/3f8/44e343fcfc4179e7c8b14907ce8548d8e5.jpg",
+    "sha256": "5345a544522cfb6ac5921ca8597e0ed5143d24bc9450d4a74c64a974cc47c575",
+    "listing_id": "f40fc5ba-0993-541a-8ba2-41a07287079d"
+  },
+  "Bike for beating the campus blitz": {
+    "path": "demo/realistic-v1/c312695a-86c3-5d5c-8b12-8d3d49d6ca23-5ebc5344a7.jpg",
+    "source": "https://www.malvernstar.com.au/bikes/sprint-2-ms-recreational-bike/",
+    "original": "https://www.malvernstar.com.au/wp-content/uploads/2021/08/MY22_SPRINT_2MS.jpg",
+    "sha256": "5ebc5344a7b0c9227c03a4e34a9a030ce7cf7b75ba65744e24083165bbe0d2a4",
+    "listing_id": "c312695a-86c3-5d5c-8b12-8d3d49d6ca23"
+  },
+  "Desk chair, five-star sitting experience": {
+    "path": "demo/realistic-v1/17b6c147-f9af-500b-8e58-454c37cb0eb0-ac0791d2cb.jpg",
+    "source": "https://www.ikea.com/it/it/p/flintan-sedia-da-ufficio-beige-70492202/",
+    "original": "https://www.ikea.com/it/it/images/products/flintan-sedia-da-ufficio-beige__1160255_pe888830_s5.jpg",
+    "sha256": "ac0791d2cbc60f3f9fc53e62c40fba615ca3fbe3dcf7133819df3938e964e03c",
+    "listing_id": "17b6c147-f9af-500b-8e58-454c37cb0eb0"
+  },
+  "Burnt orange hoodie, family-approved": {
+    "path": "demo/realistic-v1/1db2181b-4f88-5672-8086-f5e13526f354-dc32beafd5.jpg",
+    "source": "https://www.collegebasketballstore.com/mens-colosseum-burnt-orange-texas-longhorns-arch-and-logo-30-pullover-hoodie/p-4848573",
+    "original": "https://images.footballfanatics.com/texas-longhorns/mens-colosseum-burnt-orange-texas-longhorns-arch-and-logo-30-pullover-hoodie_pi4848000_ff_4848573-5bde8fbb342a1e255812_full.jpg?_hv=2",
+    "sha256": "dc32beafd57d5e1c96dc232be9b65be0a86080cb2a66cd1e650cab8322aca602",
+    "listing_id": "1db2181b-4f88-5672-8086-f5e13526f354"
+  },
+  "Desk lamp for one more chapter": {
+    "path": "demo/realistic-v1/062a58c5-40bd-5980-858a-601843b7cf2d-088d0c6191.jpg",
+    "source": "https://www.akari.store/products/adl-n401w",
+    "original": "https://www.akari.store/cdn/shop/products/ADL-N401W-_1.png?v=1671414071&width=1445",
+    "sha256": "088d0c61915615adb9eb2364cce2828b48a5d639b1e9927c6c93af5792c86b28",
+    "listing_id": "062a58c5-40bd-5980-858a-601843b7cf2d"
+  },
+  "Twin XL bedding, fourth-quarter recovery": {
+    "path": "demo/realistic-v1/ed4fc584-ebe4-5dde-8eb7-6e935f7b1a53-7466b2fed1.jpg",
+    "source": "https://www.walmart.com/ip/366700265",
+    "original": "https://i5.walmartimages.com/seo/Bare-Home-5-Piece-Bed-in-a-Bag-Twin-XL-Coronet-Blue-with-Coronet-Blue-Sheet-Set_4f713872-bb81-47ca-808e-ad04e60b9eed.01b048bfde4ed11e36758ff10e6f7d60.jpeg",
+    "sha256": "7466b2fed13a8c057819e3f234ac0993e2c21363ac52af8e8835abdeca97223c",
+    "listing_id": "ed4fc584-ebe4-5dde-8eb7-6e935f7b1a53"
+  },
+  "Blue workout hoodie, motivational edition": {
+    "path": "demo/realistic-v1/f23ee1f3-b15d-5aee-8dbe-88aee4bec0bd-27ca8061f2.jpg",
+    "source": "https://www.deaps.co.uk/products/trip-leavers-and-group-hoodies",
+    "original": "https://www.deaps.co.uk/cdn/shop/files/jh001_royalblue_ft_d91c2a1f-5cf9-4d5d-b61d-ea589dec8baf.jpg?v=1771772224&width=1445",
+    "sha256": "27ca8061f261a3d85b76edc4262868dcf6cc686a769b6c2cf711680504bfd237",
+    "listing_id": "f23ee1f3-b15d-5aee-8dbe-88aee4bec0bd"
+  },
+  "Calculator for upsetting the curve": {
+    "path": "demo/realistic-v1/096690c7-586f-50fe-8806-ba202a7f8799-4ccd1418ab.jpg",
+    "source": "https://www.elcorteingles.es/papeleria/A10509825-calculadora-cientifica-fx-82ms-2-casio/",
+    "original": "https://cdn.grupoelcorteingles.es/SGFM/dctm/MEDIA03/201905/17/00106652174191____2__1200x1200.jpg?height=1200&impolicy=Resize&width=1200",
+    "sha256": "4ccd1418ab02b08b6c041ee9021fc573c19d6b39b8dffe84e0045a345b4f2bfe",
+    "listing_id": "096690c7-586f-50fe-8806-ba202a7f8799"
+  },
+  "Coffee maker, underdog fuel": {
+    "path": "demo/realistic-v1/bbda9d36-55fb-5f78-8861-2e5e7fcd4451-fd0c4e72d7.png",
+    "source": "https://www.merlo.com.au/products/bodum-chambord-plunger",
+    "original": "https://www.merlo.com.au/cdn/shop/products/1_HERO-TRANSPARENTBACK_ee038294-2a6e-4e01-a545-78c1af3eb0a3-400202.png?v=1709778118",
+    "sha256": "fd0c4e72d7f6bf7b869ffe378cea464909f4cdcecf1df31749250a409512f900",
+    "listing_id": "bbda9d36-55fb-5f78-8861-2e5e7fcd4451"
+  },
+  "Study chair, ranked opponents welcome": {
+    "path": "demo/realistic-v1/7325a4db-6dad-5009-8f96-243d980eb0bb-8b2b73f18d.png",
+    "source": "https://www.misc.express/products/teodores-dining-chair",
+    "original": "https://www.misc.express/cdn/shop/products/0000_teodores-chair-white__0727344_pe735616_s5_e3f90139-3db1-455a-9284-bf4ac1a46a35.png?v=1739134437&width=1200",
+    "sha256": "8b2b73f18d8ad190d861ccbd90d36368e6d20356175b2c42da31b3619ead4bfa",
+    "listing_id": "7325a4db-6dad-5009-8f96-243d980eb0bb"
+  }
+}

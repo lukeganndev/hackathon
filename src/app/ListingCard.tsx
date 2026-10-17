@@ -32,7 +32,8 @@ export type CardSchool = { name: string; colors: { primary: string; secondary?: 
 
 export function ListingCard({ l, school, seller, delay = 0, mine }: { l: CardListing; school: CardSchool; seller?: string; delay?: number; mine?: boolean }) {
   const c = school.colors.primary, c2 = school.colors.secondary ?? "#828A8F";
-  const tileStyle = l.photo_url ? { background: c } : {
+  const catalogPhoto = l.photo_url?.includes("/demo/realistic-v1/");
+  const tileStyle = l.photo_url ? { background: catalogPhoto ? "#fff" : c } : {
     color: ink(c),
     background: `repeating-linear-gradient(135deg,transparent 0 18px,color-mix(in srgb,${c2} 16%,transparent) 18px 36px),${c}`,
     boxShadow: `inset 0 -7px 0 ${c2}`,
@@ -42,7 +43,7 @@ export function ListingCard({ l, school, seller, delay = 0, mine }: { l: CardLis
     <Link href={`/listings/${l.id}`} className="lcard" style={{ animationDelay: `${delay}ms` }}>
       <div className="tile" style={{ ...tileStyle, filter: sold ? "grayscale(1) opacity(.5)" : undefined }}>
         {l.photo_url
-          ? <img src={l.photo_url} alt="" />
+          ? <img src={l.photo_url} alt="" loading="lazy" decoding="async" style={catalogPhoto ? { objectFit: "contain", padding: 6 } : undefined} />
           : <svg className="ic" viewBox="0 0 24 24" aria-hidden><path d={IC[icon(l.title, l.category)]} /></svg>}
         <span className="tag">{(school.email_domains?.[0] ?? school.name).toUpperCase()}{mine ? " · YOUR CAMPUS" : ""}</span>
       </div>

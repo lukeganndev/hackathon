@@ -4,6 +4,7 @@
 // Args = display names (email before @) of 3 signed-up users: A, B, C.
 // Loop: A gives Norton -> B, B gives On Cloud shoes -> C, C gives Iron Bowl ticket -> A.
 import { createClient } from "@supabase/supabase-js";
+import { demoPhoto } from "./demo_photo.mjs";
 
 const [a, b, c] = process.argv.slice(2);
 if (!c) throw new Error("Usage: node --env-file=.env.local supabase/demo_seed.mjs <userA> <userB> <userC>");
@@ -50,7 +51,11 @@ const PHOTOS = {
   moving: photo("moving", "jchapiewsky, BY-SA, via Openverse", "jpg"),
   nashville: photo("nashville", "FyreMael, BY, via Openverse", "jpg"),
 };
-const listing = (who, row) => ({ owner_id: P[who].id, school_id: P[who].school_id, kind: "item", ...row, details: { ...row.details, demo: true } });
+const listing = (who, row) => {
+  const photo = demoPhoto(row.title);
+  return { owner_id: P[who].id, school_id: P[who].school_id, kind: "item", ...row,
+    ...(photo ? { photo_url: photo.photo_url } : {}), details: { ...row.details, ...photo?.details, demo: true } };
+};
 const rows = must(await db.from("listings").insert([
   // The loop
   listing(a, { title: "Norton Anthology of English Literature, 10th ed, Vol. 1", description: "Some highlighting in the first 100 pages. EN 205.", category: "textbooks", price_cents: 4000, ...withPhoto("norton") }),
