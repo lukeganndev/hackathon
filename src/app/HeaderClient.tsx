@@ -30,7 +30,7 @@ const TAB_ICONS: Record<string, string> = {
 };
 export function MobileNav({ slug }: { slug: string }) {
   const path = usePathname();
-  const tabs: [string, string][] = [[`/${slug}`, "Browse"], ["/listings/new", "Sell"], ["/chat", "Ask"], ["/trades", "Loops"], ["/listings/mine", "Me"]];
+  const tabs: [string, string][] = [[`/${slug}`, "Browse"], ["/chat", "Ask"], ["/listings/new", "Sell"], ["/trades", "Loops"], ["/listings/mine", "Me"]];
   return (
     <nav className="mnav" aria-label="Main">
       {tabs.map(([href, label]) => {

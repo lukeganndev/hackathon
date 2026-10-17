@@ -11,8 +11,20 @@ import "./globals.css";
 const serif = Fraunces({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-serif" });
 const sans = Inter_Tight({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-sans" });
 
-export const metadata: Metadata = { title: "Loop: the campus marketplace network", description: "Trade in loops, not pairs." };
-export const viewport: Viewport = { width: "device-width", initialScale: 1 };
+export const metadata: Metadata = {
+  title: "Loop: the campus marketplace network",
+  description: "Trade in loops, not pairs.",
+  applicationName: "Loop",
+  appleWebApp: { capable: true, title: "Loop", statusBarStyle: "default" },
+  other: { "apple-mobile-web-app-capable": "yes" },
+};
+export const viewport: Viewport = {
+  width: "device-width", initialScale: 1, viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f1ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#141311" },
+  ],
+};
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const theme = (await cookies()).get("theme")?.value;
