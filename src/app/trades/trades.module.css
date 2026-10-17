@@ -225,7 +225,7 @@
   right:0;
   bottom:10px;
   border:1px solid var(--line);
-  background:white;
+  background:var(--card);
   border-radius:6px;
   padding:10px 13px;
   transform:rotate(-6deg);
@@ -283,7 +283,7 @@
 .tabs button[aria-pressed=true] {
   border-color:var(--line);
   color:var(--ink);
-  background:white
+  background:var(--card)
 }
 .empty {
   padding:42px 24px;
@@ -371,7 +371,7 @@
 }
 .matchCard {
   border:1px solid var(--line);
-  background:white;
+  background:var(--card);
   border-radius:14px;
   padding:22px;
   min-width:0
@@ -464,7 +464,7 @@
   border:1px solid var(--line);
   border-radius:12px;
   overflow:hidden;
-  background:white
+  background:var(--card)
 }
 .tradeRow {
   display:flex;
@@ -574,7 +574,7 @@
   align-items:start
 }
 .panel {
-  background:white;
+  background:var(--card);
   border:1px solid var(--line);
   border-radius:14px;
   padding:26px;
@@ -699,7 +699,7 @@
 .meetupForm input,.meetupForm select,.codeEntry input {
   border:1px solid #d6dbce;
   border-radius:7px;
-  background:white;
+  background:var(--card);
   color:var(--ink);
   min-height:44px;
   padding:11px;

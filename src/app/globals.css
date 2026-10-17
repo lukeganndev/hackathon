@@ -107,3 +107,4 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition: none !important; }
 }
+.gate .crest { width: 56px; height: 66px; }
