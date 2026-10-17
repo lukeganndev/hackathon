@@ -61,6 +61,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); }
   border-radius: 22px; padding: 34px 36px; display: flex; gap: 28px; align-items: center; position: relative; overflow: hidden; animation: up .6s both; }
 .band::after { content: ""; position: absolute; right: -70px; top: -70px; width: 280px; height: 280px; border-radius: 50%; border: 36px solid var(--c2); opacity: .55; animation: spin 20s linear infinite; }
 .band::before { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.2) 50%, transparent 60%); transform: translateX(-100%); animation: sheen 4.5s 1s infinite; }
+/* logo.dev school banner photo under a school-color wash, so text stays readable. */
+.band.has-banner { background:
+  linear-gradient(105deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 88%, transparent) 45%, color-mix(in srgb, var(--accent) 35%, transparent) 100%),
+  var(--banner) center / cover no-repeat; min-height: 230px; }
+.band.has-banner h1, .band.has-banner p, .band.has-banner small { text-shadow: 0 2px 12px rgba(0,0,0,.25); }
 .band h1 { font-size: clamp(36px, 6vw, 66px); line-height: 1; margin: 0; }
 .band small { letter-spacing: .1em; text-transform: uppercase; font-weight: 600; opacity: .8; }
 .band p { margin: 10px 0 0; max-width: 46ch; opacity: .92; }

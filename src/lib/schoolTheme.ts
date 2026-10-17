@@ -1,5 +1,5 @@
 // School branding helpers, ported from the Loop design.
-export type School = { id: string; slug: string; name: string; colors: { primary: string; secondary?: string; logo_block?: boolean }; slogan?: string | null; logo_url?: string | null };
+export type School = { id: string; slug: string; name: string; colors: { primary: string; secondary?: string; logo_block?: boolean; banner?: string }; slogan?: string | null; logo_url?: string | null };
 
 const lum = (hex: string) => {
   const h = hex.replace("#", "");
