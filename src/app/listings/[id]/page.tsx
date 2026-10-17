@@ -14,6 +14,8 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
     .select("*, owner:profiles(display_name), school:schools(name, slug, colors)")
     .eq("id", id).single();
   if (!l) notFound();
+  const { count: wanted } = await supabase
+    .from("wants").select("id", { count: "exact", head: true }).eq("listing_id", id).eq("active", true);
   const { data: myWant } = await supabase
     .from("wants").select("id").eq("listing_id", id).eq("user_id", user.id).eq("active", true).maybeSingle();
 
@@ -32,6 +34,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
       )}
       {l.kind === "ride" && d.pickup && <p>📍 Pickup: {d.pickup}</p>}
       {l.kind === "service" && d.course && <p>📚 {d.course}</p>}
+      {!!wanted && <p className="rounded bg-[var(--school)] text-white px-3 py-2 self-start">🔔 {wanted} student{wanted === 1 ? " wants" : "s want"} this</p>}
       {l.description && <p>{l.description}</p>}
       <p className="text-sm opacity-70">Posted by {l.owner.display_name} · {l.category?.replace("_", " ")}</p>
       {l.ticket_type && <p className="text-sm opacity-70">🎟 Transfers through the official ticket account. Payment is held until the buyer confirms.</p>}

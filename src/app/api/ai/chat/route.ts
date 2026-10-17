@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { supabaseServer } from "@/lib/supabase/server";
+import { matchWaitingWants } from "@/lib/matchWants";
 
 // Chat agent: turns "trade my shoes for a Norton Anthology or sell for $25" into
 // listings (haves) and wants. Tools run as the signed-in user, so RLS applies.
@@ -97,7 +98,7 @@ const tools: Anthropic.Beta.BetaTool[] = [
 const STATUS: Record<string, string> = {
   search_listings: "Searching listings on every campus…",
   my_listings: "Checking what you've already posted…",
-  create_listing: "Posting your listing…",
+  create_listing: "Posting your listing and checking who wants it…",
   add_want: "Saving what you want…",
 };
 
@@ -126,7 +127,9 @@ async function runTool(name: string, input: Record<string, unknown>, db: Supabas
       const details = Object.fromEntries(Object.entries(input.details as object).filter(([, v]) => v != null));
       const { data, error } = await db.from("listings").insert({ ...input, details, owner_id: me.id, school_id: me.school_id })
         .select("id, title").single();
-      return error ? { error: error.message } : { saved: data };
+      if (error) return { error: error.message };
+      const waiting = await matchWaitingWants(data.id).catch(() => 0);
+      return { saved: data, students_already_waiting_for_this: waiting };
     }
     case "add_want": {
       const { data, error } = await db.from("wants").insert({ ...input, user_id: me.id, school_id: me.school_id })

@@ -84,6 +84,8 @@ export default function NewListing() {
       face_value_cents: kind === "item" && f.ticket_type ? cents(f.face_value) : null,
     }).select("id").single();
     if (error) return setError(error.message); // includes ticket policy errors from the DB
+    setStatus("Checking who's already looking for this…");
+    await fetch("/api/ai/match", { method: "POST", body: JSON.stringify({ listingId: data.id }) }).catch(() => {});
     router.push(`/listings/${data.id}`);
   }
 
