@@ -1,84 +1,36 @@
 # Handoff
 
-_Last updated: 2026-10-17 ~1:45 CT_
+_Last updated: 2026-10-17 ~2:25pm CT. Demo at 5pm._
 
-## Goal
-Hackathon (deadline 5pm, aim done 4pm). Prompt: multi-tenant campus marketplace, start with Alabama (UA), .edu verified, per-school customization, cross-campus browsing, innovation weighted most.
-Team: 3 beginners using Codex + Claude.
+## What Loop is
+Campus marketplace (UA first, 74 schools seeded) where an AI finds **multi-way trade loops** (A→B→C→A). .edu login picks your school and rethemes the site. Stack: Next.js 15 + Supabase (Postgres/RLS/storage, email OTP) + Claude (claude-opus-5-5) + Stripe test mode.
 
-## Idea: AI multi-way trade loops
-- Photo -> AI fills listing (name, category, price). Standard feature, not the pitch.
-- Chat agent: "trade my shoes for Norton Anthology or sell for $25" -> structured haves/wants.
-- Matcher: cycle detection on haves->wants graph (kidney-exchange style). Finds A->B->C->A trades. THE innovation.
-- Cross-campus = bigger graph = more loops.
+## State: everything built and verified locally
+- **Live site is STALE**: https://hackathon-cszx.vercel.app is stuck at the ~2pm build. Luke's Vercel hit the free limit (100 deploys/24h). Plan: a friend deploys from their own Vercel account (`docs/vercel-deploy.md`). Then push in batches only.
+- **Latest version runs locally**: `npm run dev` → http://localhost:3000 (Claude preview config "loop-dev" in `.claude/launch.json`). Don't run `next build` while dev is running (breaks `.next`); use `npx tsc --noEmit` + `npx eslint src`.
+- **Database is shared and live** (Supabase `mfjizvmectbqgyfqqvoq`), migrations 0001–0008 all installed.
 
-## Decisions
-- Stack: Next.js + Supabase (email OTP auth, Postgres, RLS, storage) + Claude API + Vercel.
-- Tenancy: one DB, `school_id` on every row. `schools` row = slug, email domains[], colors, safe meetup spots, ticket policy. New school = insert a row (live demo: add Auburn).
-- Email domain auto-assigns school (Alabama: crimson.ua.edu, ua.edu). Path URLs `/alabama`, not subdomains. Colors only, no trademarked logos.
-- Payments: Stripe test mode, manual capture (hold, charge on handoff). Seller payouts (Connect) = roadmap.
-- Handoff: receiver shows giver a 4-digit code; giver enters it -> confirms handoff / captures payment.
-- Trade states: proposed -> all accepted -> meetup set -> each leg confirmed -> done. Loop is all-or-nothing.
-- Tickets: transfer via official account only; payment held until buyer confirms or event start (auto-refund). Ticket policy per ticket type: transfer_only | face_value_cap | open. UA general tickets allow resale but ban brokers -> face_value_cap + broker-flag (many ticket listings). Student ticket rules: still unchecked.
-- Trust: .edu identity, ratings only after code-confirmed deal, AI moderation of listings, safe meetup spots per school, report/block.
+## Features (where to look)
+- Sign-in gate with live school preview + welcome splash: `src/app/login/LoginGate.tsx`. Signup trigger matches email domain incl. subdomains.
+- Campus page `src/app/[school]/page.tsx`: band with logo + slogan, Ask Loop box (`AskLoop.tsx`), loop banner, impact stats (count-up), My campus / All campuses, search, cards (`src/app/ListingCard.tsx`).
+- Ask Loop full screen `/chat` (`src/app/chat/page.tsx`) + shared logic `src/app/chat/ChatParts.tsx` (saved chats in localStorage `loop-chats`, typing effect, listing/loop cards). Agent `src/app/api/ai/chat/route.ts`, tools: search_listings, my_listings{show}, create_listing, update_listing, add_want, find_loops, propose_loop (auto-starts found loops). History must stay append-only (Opus 5.5 rejects edited history).
+- Photo → AI listing (types into form): `src/app/listings/new/page.tsx`, `/api/ai/listing`. Posts go through `POST /api/listings` (AI moderation `src/lib/moderate.ts`) + DB blocklist (0008).
+- Trades (Friend C, restyled by Luke): `/trades`, `/trades/[id]`, RPC `loop_trade_action` (0002/0004), Stripe holds `src/lib/stripeHolds.ts`, confetti on close.
+- Also: wants that wait (`src/lib/matchWants.ts`), ratings after confirmed handoff (0005, `/u/[id]`), reports (0003), My stuff `/listings/mine`, Buy button, mobile tab bar.
+- Branding: logo.dev icons for all 75 schools in bucket `logos/icon-<slug>.png` (`schools.logo_url`), shown near-square. **No banner photos** (Luke said no). Design tokens in `src/app/globals.css`.
 
-## Scope (app name: Loop, desktop-first website (still usable on phones), live demo + backup video, 3-5 min pitch)
-- Core (must): auth/schools, photo->listing, chat agent, loop matcher, trade steps w/ codes, Stripe hold, ticket policy check.
-- Tier 1 (2:00pm): loop animation, cash top-ups, impact counter, rivalry mode (Auburn row + cross-campus banner).
-- Tier 2 (only if core green at 2pm): wants that wait (in-app only), move-out bulk photos, course-aware textbooks. Cut in reverse order.
-- Pitch-only (roadmap): Stripe Connect payouts, ticketing API, broker flag, AI negotiation, licensed logos.
-
-## Timeline
-10:45 accounts + schema + scaffold | 11:15-1:30 core in parallel | 1:30-2:00 integrate + deploy | 2:00-3:15 tier 1 | 3:15-3:30 tier 2 if green | 3:30 FEATURE FREEZE | 3:30-4:00 seed demo data, record backup video | 4-5 review + pitch practice
-
-## Team split (own your folders only, so merges never conflict)
-| Who | Owns | Builds |
-|---|---|---|
-| Luke (Claude) | `src/app/[school]/`, `src/app/listings/`, `src/app/api/ai/`, `src/app/chat/` | Feed, listing pages, create form + photo upload, photo->listing AI, chat agent -> `wants` |
-| Friend C (Codex) | `src/lib/matcher.ts`, `src/app/api/trades/`, `src/app/trades/` | Loop finder, trade steps + 4-digit codes, Stripe hold |
-| Friend B (Codex, design) | `src/app/page.tsx` (landing), `src/app/globals.css`, `src/app/layout.tsx`, `src/components/ui/`, `public/` | Landing page, look and feel, shared UI components, loop animation, pitch slides |
-- Briefs to paste into Codex: `docs/friend-b-design.md`, `docs/friend-c-trades.md`. Branch per person, PR into `main`.
-- Others use Friend B's components from `src/components/ui/`; ask before editing them.
-
-## Built
-- Next.js 15 + Tailwind at repo root; `npm run build` and lint pass. Setup steps in `README.md`.
-- Schema `supabase/migrations/0001_init.sql` (checked against in-memory Postgres): schools, profiles, listings (haves), wants, trades, trade_legs, trade_leg_codes. RLS on all.
-  - Signup trigger: email domain -> school_id; unknown domain = signup fails (.edu gate).
-  - Ticket policy enforced by DB trigger: transfer_only = no cash, face_value_cap = price <= face.
-  - Trades/legs/codes: clients read only; writes via `supabaseAdmin()` in server routes. Code table readable by receiver only.
-  - `wants.listing_id` = concrete matcher edge; null = fuzzy want for AI to resolve.
-  - `listings.kind` = item | service | ride; `details` jsonb holds per-kind fields (ride: from/to/depart_at/seats; service: unit, course). Services (tutoring, haircut, nails, moving_help) and rides stay active after a deal, so the matcher must not mark them traded. Services/rides can be loop legs ("tutoring for a ride").
-  - Storage bucket `listing-photos`, upload path `<uid>/file`.
-- `src/lib/supabase/{client,server}.ts`, `src/middleware.ts`, pages `/`, `/[school]`, `/login` (6-digit email code).
-- Luke's part: `/listings/new` (item/service/ride form; photo shrunk to 1280px, uploaded to storage, `/api/ai/listing` drafts title/desc/category/price/ticket_type via claude-opus-5-5, effort low, base64 image, ~5s, fallbacks "default"). `/listings/[id]` + `WantButton` (inserts `wants` with `listing_id` = matcher edge). `/[school]` feed grid links to listings.
-- `/chat` + `/api/ai/chat`: agent with tools search_listings, my_listings, create_listing, add_want (run as user, RLS). Client holds raw message history incl. thinking blocks and sends it back unchanged (Opus 5.5 rejects edited history). Tested 2 turns with fake tools.
-- Trades: Friend C's `loop_trade_action` RPC installed as `supabase/migrations/0002_trade_action.sql` (service_role only; tested full 3-way flow on in-memory PG + live grants). Merged to main (screens at `/trades`, `/trades/[id]`). Cash legs blocked at meetup until Stripe. Cancel blocked after any confirmed handoff (agreed).
-- Cross-campus: `/[school]?all=1` toggle, school tags, rivalry banner per other school. Auburn NOT in DB; add live in pitch with `supabase/demo_add_auburn.sql`.
-- Wants that wait: `src/lib/matchWants.ts` links open fuzzy wants to a new listing (Claude, strict match). Runs after form post (`/api/ai/match`) and in chat `create_listing`. Listing page shows "N students want this".
-- Impact counter on `/[school]` (`ImpactCounter.tsx`, admin aggregate counts): students, live listings, items reused, $ kept on campus, loops closed.
-- `/listings/mine`: your listings + wants with Remove (soft delete). Report button on listings; `0003_reports.sql` installed (3 reports auto-hide).
-- Stripe (Luke): `src/lib/stripeHolds.ts` tested in test mode (hold/capture/release, idempotent). `0004_stripe_cash_legs.sql` installed. Wired in `src/app/api/trades/_lib/server.ts` mutate(): hold on accepted, capture on confirm, release on cancel.
-- Ratings: `0005_ratings.sql` installed (insert only after a code-confirmed handoff, by its two people, once; `rating_summary` view). Profile `/u/[id]`, stars on listings, "Rate your recent trades" on `/listings/mine`. Buy button = 1-leg cash trade.
-- Loop banner on `/[school]` (`LoopBanner.tsx`): tells a signed-in student they're in a loop. `0006_privacy_limits.sql` installed: profiles email hidden from students (column grants; never `select *` on profiles), photo bucket 5MB images only.
-- Verified live: 3-way loop closed with codes; cash sale hold/charge/release; reviews. Login: send/verify buttons disable while busy, 60s resend cooldown (multiple clicks used to email several codes and void older ones).
-- DESIGN (Downloads/Loop — the campus marketplace network.html) applied: tokens + classes in `globals.css` (.band .crest .tick .stats .seg .lgrid .lcard .tile .panel .gate .btn .btn-ghost), fonts Fraunces/Inter Tight, root header + per-school theme vars in `layout.tsx` (`HeaderClient.tsx`: Nav, SignOut, Intro), `Crest.tsx` (logo_url or initials shield), `ListingCard.tsx`, `/login` gate with live school preview + welcome splash, `/` redirects. Trades header removed (root header now). `0007_schools_network.sql`: 73 schools w/ colors+slogan, `slogan`/`logo_url` columns, subdomain email match. Skipped from design (pitch-only): seller DMs bot, shipping/fees, price alerts, admin console.
-- School logos: 64 from Wikimedia Commons (Wikidata P154), stored in bucket `logos/<slug>.png`, `schools.logo_url`; Transparent PNGs (5 had backgrounds cut out; BU flagged colors.logo_block); CSS shows white silhouette on bands + dark mode, real colors on light, else initials shield. Auburn logo pre-stored, set in `demo_add_auburn.sql`.
-- Moderation: `0008_content_filter.sql` DB blocklist trigger on listings/wants/ratings (drugs, weapons, fake IDs, cheating, alcohol; word-boundary, weed eater ok) + extra student domains (ksu.edu, iu.edu, washington.edu, tennessee.edu). AI layer `src/lib/moderate.ts` (text+photo, fails open) used by `POST /api/listings` (form now posts here) and chat create_listing/add_want. Ticker removed; logos on white plate (`.crest.logo`).
-- Ask Loop box on `/[school]` (`AskLoop.tsx`, under the band): inline AI chat in affectUI-like style (glow, orb, chips, shimmer ThinkingPill). Chat logic shared in `src/app/chat/ChatParts.tsx` (useLoopChat, Thread, ThinkingPill). affectUI AI components are Pro (paid); ours is a lookalike.
-- Latest pass (local only until deploy unblocked): logo.dev icons for all 75 schools (`logos/icon-<slug>.png`, rounded app-icon style), mobile layout + bottom tab bar (`MobileNav`, `.mnav`), typing effect (`TypeText`, autofill types into fields), count-up stats + loop-closed confetti (`src/app/Motion.tsx`), chat history saved in localStorage (cleared on sign-out, "New chat"), chat tools `find_loops` + `propose_loop` + `update_listing` (own listings: price/title/desc/trade-only/take down) + `my_listings {show}` cards (proposes only after the student says yes). Seed now 23 listings, most with Openverse/Wikimedia photos + credits.
-- Banners: REMOVED at Luke's request (data still in bucket/colors.banner, unused). Logos: logo.dev icons, near-square corners.
-- Ask Loop: multi-chat store in localStorage `loop-chats` (`ChatParts.tsx` useLoopChat: convs/current/open/reset/remove), shared by campus box + full screen `/chat` (sidebar of previous chats). Chat renders listing cards (search results) and loop cards; agent auto-proposes found loops ("Starting a loop…"). Search is plural-tolerant. Demo fridge now owned by hlpenick so "mini fridge for my Norton" forms a 2-way loop.
-- Trade screens restyled onto the design system: `trades.module.css` rewritten (tokens, panels, pills, progress, code card); dashboard hero is the school band with animated loop mark.
-- Demo data: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (re-runnable, demo rows tagged `details.demo`/`[demo]` wants). Loop lrgann -> hlpenick -> egbarber -> lrgann.
-- Login works on live site (Gmail SMTP saved, Magic Link + Confirm signup templates send `{{ .Token }}`).
-- Vercel: https://hackathon-cszx.vercel.app (project hackathon-cszx, auto-deploys main; env vars set).
-- Supabase project `mfjizvmectbqgyfqqvoq` (ca-central-1): migration + seed applied, 7 tables + bucket verified. `.env.local` has URL prefilled (gitignored).
+## Demo
+- Accounts: lrgann (Luke), hlpenick, egbarber (all UA). Reset before every run: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber` (23 listings, 3-way loop lrgann→hlpenick→egbarber; keeps completed trades/reviews).
+- Script: `docs/pitch.md`. Moments: type `@vt.edu` on sign-in (retheme) → Ask Loop "Can I see listings for mini fridges?" (cards) → "Get me a mini fridge for my Norton Anthology" (auto loop) → others accept, meetup, codes, confetti → run `supabase/demo_add_auburn.sql` live (new school).
+- Any practice trade reserves items; reset after.
 
 ## Next steps
-1. Merge + check Friend B/C design baseline when pushed (build, then click through feed, listing, chat, trades).
-2. Rehearse pitch (`docs/pitch.md`), record backup video. Reset demo first: `node --env-file=.env.local supabase/demo_seed.mjs lrgann hlpenick egbarber`.
-3. Check Alabama student ticket transfer policy (seed assumes `football_student: transfer_only`).
+1. Friend deploys via `docs/vercel-deploy.md`; check every page on the new URL.
+2. Full dress rehearsal on the latest version (3 laptops), then reset demo.
+3. Pitch deck (Luke asked for slides with demo flow), backup screen recording.
 
 ## Gotchas
-- VERCEL BLOCKED: Hobby "young team" limit hit (>100 deployments/24h, code api-deployments-young-hobby-team-24h). Live site stuck at 0186e9c (~2pm). Fix: start Vercel Pro trial, or demo from `npm run dev` (localhost:3000, `.claude/launch.json` "loop-dev"). Batch pushes from now on.
+- Vercel limit: every push = a deploy. Batch.
+- Anthropic credit: ~$4.79 prepaid, no auto-reload (hard cap).
+- Never `select *` on profiles (email column hidden by grants).
 - On Windows, clone with `git -c core.longpaths=true clone ...` if the path is long.
