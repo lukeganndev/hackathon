@@ -35,7 +35,7 @@ Team: 3 beginners using Codex + Claude.
 | Who | Owns | Builds |
 |---|---|---|
 | Luke (Claude) | `src/app/[school]/`, `src/app/listings/`, `src/app/api/ai/`, `src/app/chat/` | Feed, listing pages, create form + photo upload, photo->listing AI, chat agent -> `wants` |
-| Friend A (Codex) | `src/lib/matcher.ts`, `src/app/api/trades/`, `src/app/trades/` | Loop finder, trade steps + 4-digit codes, Stripe hold |
+| Friend C (Codex) | `src/lib/matcher.ts`, `src/app/api/trades/`, `src/app/trades/` | Loop finder, trade steps + 4-digit codes, Stripe hold |
 | Friend B (Codex, design) | `src/app/page.tsx` (landing), `src/app/globals.css`, `src/app/layout.tsx`, `src/components/ui/`, `public/` | Landing page, look and feel, shared UI components, loop animation, pitch slides |
 - Branch per person, PR into `main`. Vercel gives each branch a preview URL.
 - Others use Friend B's components from `src/components/ui/`; ask before editing them.
